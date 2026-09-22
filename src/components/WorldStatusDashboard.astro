@@ -1,0 +1,96 @@
+---
+import StatusBadge from './StatusBadge.astro';
+import ArchiveCard from './ArchiveCard.astro';
+
+const currencies = [
+	{ region: 'Azure Land', code: 'AZL', name: 'Azure Land Gold', note: 'Pegged 1:1 with USD' },
+	{ region: 'Taihei', code: 'TQL', name: 'Taihei Quills', note: 'Equal to Japanese Yen' },
+	{ region: 'Afrea', code: 'AFR', name: 'Afrean Real', note: 'Pegged to European Euro' },
+	{ region: 'Sirmiq', code: 'SIK', name: 'Sirmiq Ice Krone', note: 'Based on Danish Krone' },
+];
+
+const regions = [
+	{ name: 'Twin Isles', code: 'AZL', desc: 'Central hub — two identical islands in the middle of the ocean. Northport on northern isle.' },
+	{ name: 'Taihei', code: 'TQL', desc: 'Southern Twin Isles faction-state. Prime Minister: Takechi Hironaka (Earthian #4).' },
+	{ name: 'Afrea', code: 'AFR', desc: 'Continental nation on Macaham. Leading member of the Macaham Union.' },
+	{ name: 'Sirmiq', code: 'SIK', desc: 'Arctic circumnavigating country. Capital: Sivudlerk. Language: Inuktitut.' },
+	{ name: 'Volnyk', code: '', desc: 'Southern island nation near Antarctic. Ruled by Empress Impera Loressa, capital Atalin.' },
+];
+---
+
+<section class="dashboard">
+	<div class="container">
+		<div class="dashboard__header">
+			<h2>World Status</h2>
+			<p class="mono">Fablea Prime — Current As Of Archive 001</p>
+		</div>
+
+		<div class="dashboard__grid">
+			<div class="dashboard__panel">
+				<h3>Currencies</h3>
+				<div class="dashboard__list">
+					{currencies.map((c) => (
+						<ArchiveCard title={c.code} subtitle={c.region}>
+							<StatusBadge label="Name" value={c.name} slot="badge" />
+							<StatusBadge label="Peg" value={c.note} slot="badge" />
+							<p slot="content">{c.region} — {c.name} ({c.code}). {c.note}.</p>
+						</ArchiveCard>
+					))}
+				</div>
+			</div>
+
+			<div class="dashboard__panel">
+				<h3>Regional Overview</h3>
+				<div class="dashboard__list">
+					{regions.map((r) => (
+						<ArchiveCard title={r.name} subtitle="Region">
+							<StatusBadge label="Currency" value={r.code || '—'} slot="badge" />
+							<StatusBadge label="Status" value="Active" variant="active" slot="badge" />
+							<p slot="content">{r.desc}</p>
+						</ArchiveCard>
+					))}
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.dashboard {
+		padding: 64px 0;
+	}
+
+	.dashboard__header {
+		margin-bottom: 32px;
+	}
+
+	.dashboard__grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 40px;
+	}
+
+	.dashboard__panel h3 {
+		font-size: 1rem;
+		color: var(--color-accent-azure);
+		font-family: var(--font-family-mono);
+		letter-spacing: 0.05em;
+		margin-bottom: 16px;
+	}
+
+	.dashboard__list {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	@media (max-width: 768px) {
+		.dashboard {
+			padding: 48px 0;
+		}
+
+		.dashboard__grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

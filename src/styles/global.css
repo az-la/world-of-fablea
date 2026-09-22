@@ -1,0 +1,114 @@
+/* ============================================================
+ * World of Fablea — Global Styles
+ * Archival database aesthetic inspired by Vesper City
+ * Vanilla CSS only — no frameworks
+ * ============================================================ */
+
+/* ----- Color Palette (archival / maritime / atmospheric) ----- */
+:root {
+  /* Base */
+  --color-bg: #0a0f1a;
+  --color-bg-secondary: #0f172a;
+  --color-bg-card: rgba(15, 31, 53, 0.65);
+  --color-bg-glass: rgba(255, 255, 255, 0.08);
+
+  /* Text */
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+  --color-text-accent: #ffffff;
+
+  /* Accent — Azure Land gold & teal */
+  --color-accent-azure: #0e9aa7;      /* primary teal */
+  --color-accent-gold: #c9a87a;       /* AZL gold */
+  --color-accent-gold-bright: #e8c57d;
+  --color-accent-border: rgba(14, 154, 167, 0.3);
+  --color-accent-glow: rgba(200, 168, 122, 0.25);
+
+  /* Status badges */
+  --color-status-restricted: #dc2626;
+  --color-status-active: #16a34a;
+  --color-status-draft: #ca8a04;
+
+  /* Gradients */
+  --gradient-hero: linear-gradient(135deg, #0a0f1a 0%, #1c2a48 60%, #0a0f1a 100%);
+  --gradient-card: linear-gradient(145deg, rgba(15, 31, 53, 0.9) 0%, rgba(10, 19, 33, 0.95) 100%);
+
+  /* Typography */
+  --font-family-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Shadows */
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-glow: 0 0 20px var(--color-accent-glow);
+
+  /* Sizing */
+  --border-radius: 12px;
+  --border-radius-sm: 8px;
+}
+
+/* ----- Reset & Base ----- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-hero);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ----- Layout Container ----- */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ----- Typography ----- */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.75rem 0;
+  color: var(--color-text-primary);
+}
+
+h1 { font-size: clamp(2.25rem, 4vw, 3.25rem); }
+h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+h3 { font-size: clamp(1.125rem, 2.5vw, 1.35rem); }
+
+p {
+  margin: 0 0 1rem 0;
+  color: var(--color-text-secondary);
+}
+
+a {
+  color: var(--color-accent-azure);
+  text-decoration: none;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-accent-gold-bright);
+  opacity: 0.85;
+}
+
+/* Mono text for archival tags */
+.mono {
+  font-family: var(--font-family-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
