@@ -2,13 +2,22 @@
 import Layout from '../layouts/Layout.astro';
 import HeroSection from '../components/HeroSection.astro';
 import WorldStatusDashboard from '../components/WorldStatusDashboard.astro';
-import WorldMap from '../components/WorldMap.astro';
-import EarthianRegistryPreview from '../components/EarthianRegistryPreview.astro';
+import RegionsGrid from '../components/RegionsGrid.astro';
+import EarthianRegistry from '../components/EarthianRegistry.astro';
+import InstitutionsGrid from '../components/InstitutionsGrid.astro';
+import RestrictedArchives from '../components/RestrictedArchives.astro';
+import Footer from '../components/Footer.astro';
 ---
 
-<Layout title="World of Fablea — Archival Database" description="An archival database of the summoned realm. Fablea Prime, where Earth's fictional characters coexist with native residents.">
+<Layout
+	title="World of Fablea: Archival Database"
+	description="An archival database of the summoned realm. Fablea Prime, where Earth's fictional characters coexist with native residents."
+>
 	<HeroSection />
 	<WorldStatusDashboard />
-	<WorldMap />
-	<EarthianRegistryPreview />
+	<RegionsGrid />
+	<EarthianRegistry />
+	<InstitutionsGrid />
+	<RestrictedArchives />
+	<Footer />
 </Layout>

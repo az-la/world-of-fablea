@@ -1,0 +1,23 @@
+---
+interface Item {
+	key: string;
+	value: string;
+	note?: string;
+}
+
+const { items } = Astro.props as { items: Item[] };
+---
+
+<ul class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-px bg-border-subtle border border-border-subtle">
+	{
+		items.map((item) => (
+			<li class="bg-bg-primary p-4">
+				<p class="font-mono text-xs tracking-[0.08em] text-text-secondary uppercase">
+					{item.key}
+				</p>
+				<p class="mt-1.5 text-sm font-medium text-text-primary">{item.value}</p>
+				{item.note && <p class="mt-1 text-xs text-text-muted">{item.note}</p>}
+			</li>
+		))
+	}
+</ul>

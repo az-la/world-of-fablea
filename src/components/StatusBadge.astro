@@ -1,70 +1,35 @@
 ---
 interface Props {
 	label: string;
-	value: string;
-	variant?: 'default' | 'restricted' | 'active' | 'draft';
+	value?: string;
+	variant?: 'neutral' | 'active' | 'restricted' | 'pending';
 }
 
-const { label, value, variant = 'default' } = Astro.props;
+const { label, value, variant = 'neutral' } = Astro.props;
 
-const variantClass = {
-	default: 'badge--default',
-	restricted: 'badge--restricted',
-	active: 'badge--active',
-	draft: 'badge--draft',
+const variantClasses = {
+	neutral: 'border-text-secondary bg-bg-tertiary text-text-primary',
+	active: 'border-accent-active bg-bg-tertiary text-text-primary',
+	restricted: 'border-accent-restricted bg-bg-tertiary text-text-primary',
+	pending: 'border-accent-gold bg-bg-tertiary text-text-primary',
+}[variant];
+
+const leftBorder = {
+	neutral: 'border-l-text-secondary',
+	active: 'border-l-accent-active',
+	restricted: 'border-l-accent-restricted',
+	pending: 'border-l-accent-gold',
 }[variant];
 ---
 
-<span class={`badge ${variantClass}`}>
-	<span class="badge__label">{label}</span>
-	<span class="badge__value">{value}</span>
+<span
+	class:list={[
+		'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[0.7rem] font-semibold tracking-[0.1em] uppercase',
+		variantClasses,
+		leftBorder
+	]}
+	aria-label={value ? `Status: ${label} ${value}` : `Status: ${label}`}
+>
+	{value && <span class="opacity-70">{label}</span>}
+	<span class="font-semibold">{value ?? label}</span>
 </span>
-
-<style>
-	.badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		padding: 4px 10px;
-		border-radius: 6px;
-		font-family: var(--font-family-mono);
-		font-size: 0.7rem;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
-		border: 1px solid var(--color-accent-border);
-		background: var(--color-bg-glass);
-		backdrop-filter: blur(10px);
-	}
-
-	.badge--default {
-		color: var(--color-text-secondary);
-		border-color: rgba(255, 255, 255, 0.12);
-	}
-
-	.badge--restricted {
-		color: var(--color-status-restricted);
-		border-color: rgba(220, 38, 38, 0.3);
-		background: rgba(220, 38, 38, 0.08);
-	}
-
-	.badge--active {
-		color: var(--color-status-active);
-		border-color: rgba(22, 163, 74, 0.3);
-		background: rgba(22, 163, 74, 0.08);
-	}
-
-	.badge--draft {
-		color: var(--color-status-draft);
-		border-color: rgba(202, 138, 4, 0.3);
-		background: rgba(202, 138, 4, 0.08);
-	}
-
-	.badge__label {
-		opacity: 0.6;
-	}
-
-	.badge__value {
-		font-weight: 600;
-		opacity: 1;
-	}
-</style>

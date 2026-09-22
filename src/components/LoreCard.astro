@@ -1,0 +1,56 @@
+---
+import StatusBadge from './StatusBadge.astro';
+
+interface Props {
+	id: string;
+	category: string;
+	title: string;
+	excerpt: string;
+	status?: 'active' | 'restricted' | 'pending' | 'neutral';
+	statusLabel?: string;
+	href?: string;
+	comingSoon?: boolean;
+	'class'?: string;
+}
+
+const {
+	id,
+	category,
+	title,
+	excerpt,
+	status = 'neutral',
+	statusLabel,
+	href,
+	comingSoon = false,
+	class: extraClass = ''
+} = Astro.props;
+---
+
+<article
+	class:list={[
+		'group flex flex-col gap-4 border border-border-subtle bg-bg-secondary p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent-azure',
+		extraClass
+	]}
+>
+	<div class="flex items-center justify-between gap-2">
+		<span class="font-mono text-[0.65rem] tracking-[0.1em] text-text-muted uppercase">
+			{category} / {id}
+		</span>
+		{statusLabel && <StatusBadge label={statusLabel} variant={status} />}
+	</div>
+	<h3 class="font-display text-xl leading-snug text-text-primary transition-colors duration-200 group-hover:text-accent-azure">
+		{title}
+	</h3>
+	<p class="text-sm leading-relaxed text-text-secondary">{excerpt}</p>
+	<p class="mt-auto font-mono text-xs tracking-[0.05em]">
+		{comingSoon ? (
+			<span class="text-text-muted uppercase">Archive pending</span>
+		) : (
+			<a
+				href={href}
+				class="text-accent-azure transition-colors duration-200 hover:text-accent-gold">
+				Access file
+			</a>
+		)}
+	</p>
+</article>

@@ -1,0 +1,32 @@
+---
+import StatusBadge from './StatusBadge.astro';
+
+interface Props {
+	fileId: string;
+	title: string;
+	description: string;
+	note?: string;
+	accessLabel: string;
+}
+
+const { fileId, title, description, note, accessLabel } = Astro.props;
+---
+
+<article class="relative flex flex-col gap-4 border border-dashed border-accent-restricted bg-accent-restricted/5 p-6">
+	<div class="flex items-center justify-between gap-2">
+		<span class="font-mono text-[0.65rem] tracking-[0.1em] text-accent-restricted uppercase">
+			File / {fileId}
+		</span>
+		<StatusBadge label="Access restricted" variant="restricted" />
+	</div>
+	<h3 class="font-display text-2xl leading-snug text-text-primary">{title}</h3>
+	<p class="text-sm leading-relaxed text-text-secondary">{description}</p>
+	{note && (
+		<p class="border-l-2 border-accent-restricted pl-3 text-xs leading-relaxed text-text-muted">
+			{note}
+		</p>
+	)}
+	<p class="mt-auto font-mono text-xs tracking-[0.08em] text-text-muted uppercase">
+		Access: {accessLabel}
+	</p>
+</article>

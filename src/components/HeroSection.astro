@@ -1,153 +1,48 @@
 ---
-import StatusBadge from './StatusBadge.astro';
+// Hero: the opening hook. Atmospheric background slot, no fabricated imagery.
+// [IMAGE] slot: owner will supply a real hero image; until then a subtle
+// CSS atmosphere stands in, clearly not the final asset.
 ---
 
-<section class="hero">
-	<div class="hero__overlay" />
-	<div class="container hero__content">
-		<div class="hero__badges">
-			<StatusBadge label="Archive" value="001" variant="default" />
-			<StatusBadge label="Status" value="Restricted" variant="restricted" />
-			<StatusBadge label="Currency" value="AZL" variant="default" />
-		</div>
-		<h1 class="hero__title">World of Fablea</h1>
-		<p class="hero__subtitle">Archival Database — Fablea Prime</p>
-		<p class="hero__description">
-			A living testament of human storytelling powers. Heroes, villains, and sidekicks
-			from Earth's entertainment media coexist with native residents in a realm where
-			yachting is common and currency flows in Azure Land Gold.
+<section class="relative flex min-h-[70vh] items-end overflow-hidden border-b border-border-subtle" style="background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(56, 189, 248, 0.08), transparent 60%), var(--color-bg-primary);">
+	<div class="pointer-events-none absolute inset-0 opacity-[0.04]" aria-hidden="true">
+		<div
+			class="h-full w-full"
+			style="background-image: linear-gradient(var(--color-border-subtle) 1px, transparent 1px), linear-gradient(90deg, var(--color-border-subtle) 1px, transparent 1px); background-size: 48px 48px;"></div>
+	</div>
+
+	<div class="container-archival relative z-10 w-full py-12 md:py-20">
+		<p class="font-mono text-xs tracking-[0.2em] text-text-secondary uppercase">
+			Archive 001 / The World
 		</p>
-		<div class="hero__actions">
-			<a href="#earthian-registry" class="hero__btn hero__btn--primary">View Earthian Registry</a>
-			<a href="#key-regions" class="hero__btn hero__btn--secondary">Explore Regions</a>
+		<h1 class="mt-4 max-w-3xl font-display text-5xl leading-[1.1] tracking-tight text-text-primary md:text-6xl">
+			Where stories breathe, <span class="text-accent-azure">and the summoned find their harbor.</span>
+		</h1>
+		<p class="mt-6 max-w-2xl text-base leading-relaxed text-text-secondary md:text-lg">
+			Fablea is a living testament to humanity's storytelling power. A world where fictional
+			characters from Earth's entertainment media are materialized into reality, coexisting with
+			native residents and summoned Earthians.
+		</p>
+		<p class="mt-4 max-w-2xl text-base leading-relaxed text-text-secondary md:text-lg">
+			Here, yachting is a way of life. Magic intertwines with advanced eco-technology, and the
+			past never truly fades. It simply finds a new shore.
+		</p>
+
+		<div class="mt-10 flex flex-wrap gap-x-8 gap-y-2 border-t border-border-subtle pt-5">
+			<dl class="flex flex-wrap gap-x-8 gap-y-2">
+				<div>
+					<dt class="font-mono text-[0.65rem] tracking-[0.1em] text-text-muted uppercase">Currency</dt>
+					<dd class="font-mono text-xs text-accent-gold">AZL (1:1 USD)</dd>
+				</div>
+				<div>
+					<dt class="font-mono text-[0.65rem] tracking-[0.1em] text-text-muted uppercase">Core</dt>
+					<dd class="font-mono text-xs text-text-primary">Twin Isles</dd>
+				</div>
+				<div>
+					<dt class="font-mono text-[0.65rem] tracking-[0.1em] text-text-muted uppercase">Governed by</dt>
+					<dd class="font-mono text-xs text-text-primary">Isadora</dd>
+				</div>
+			</dl>
 		</div>
 	</div>
 </section>
-
-<style>
-	.hero {
-		position: relative;
-		height: 70vh;
-		min-height: 500px;
-		display: flex;
-		align-items: center;
-		overflow: hidden;
-	}
-
-	.hero::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: radial-gradient(circle at 30% 30%, rgba(14, 154, 167, 0.15) 0%, transparent 50%),
-			radial-gradient(circle at 70% 70%, rgba(200, 168, 122, 0.08) 0%, transparent 50%);
-		z-index: 0;
-		pointer-events: none;
-	}
-
-	.hero__overlay {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: linear-gradient(180deg, rgba(10, 15, 26, 0.7) 0%, rgba(10, 15, 26, 0.95) 100%);
-		z-index: 0;
-	}
-
-	.hero__content {
-		position: relative;
-		z-index: 1;
-		max-width: 800px;
-	}
-
-	.hero__badges {
-		display: flex;
-		gap: 8px;
-		margin-bottom: 24px;
-		flex-wrap: wrap;
-	}
-
-	.hero__title {
-		font-size: clamp(2.5rem, 6vw, 4rem);
-		letter-spacing: -0.03em;
-		margin-bottom: 8px;
-		color: var(--color-text-primary);
-	}
-
-	.hero__subtitle {
-		font-size: 1.25rem;
-		font-family: var(--font-family-mono);
-		letter-spacing: 0.1em;
-		color: var(--color-accent-gold);
-		margin-bottom: 24px;
-	}
-
-	.hero__description {
-		font-size: 1.05rem;
-		line-height: 1.7;
-		color: var(--color-text-secondary);
-		margin-bottom: 32px;
-		max-width: 640px;
-	}
-
-	.hero__actions {
-		display: flex;
-		gap: 16px;
-		flex-wrap: wrap;
-	}
-
-	.hero__btn {
-		display: inline-flex;
-		align-items: center;
-		padding: 12px 24px;
-		border-radius: 8px;
-		font-family: var(--font-family-mono);
-		font-size: 0.8rem;
-		font-weight: 600;
-		letter-spacing: 0.05em;
-		text-transform: uppercase;
-		transition: all 0.2s ease;
-		border: 1px solid var(--color-accent-border);
-	}
-
-	.hero__btn--primary {
-		background: var(--color-accent-azure);
-		color: #0a0f1a;
-	}
-
-	.hero__btn--primary:hover {
-		background: var(--color-accent-gold);
-		color: #0a0f1a;
-		transform: translateY(-1px);
-		box-shadow: var(--shadow-glow);
-	}
-
-	.hero__btn--secondary {
-		background: var(--color-bg-glass);
-		color: var(--color-text-primary);
-		backdrop-filter: blur(10px);
-	}
-
-	.hero__btn--secondary:hover {
-		background: rgba(255, 255, 255, 0.12);
-		border-color: var(--color-accent-azure);
-	}
-
-	@media (max-width: 768px) {
-		.hero {
-			height: 60vh;
-			min-height: 400px;
-		}
-
-		.hero__content {
-			max-width: 100%;
-		}
-
-		.hero__description {
-			max-width: 100%;
-		}
-	}
-</style>

@@ -1,0 +1,114 @@
+---
+import ArchiveHeader from './ArchiveHeader.astro';
+import LoreCard from './LoreCard.astro';
+
+// All 12 Earthians per Fablea_tidied.md. Arrival offsets are relative to hmgfan.
+const earthians = [
+	{
+		no: '01',
+		name: 'hmgfan',
+		title: 'Harem Maker',
+		excerpt: 'First Earthian. Yachting promoter for Income Makers, Northport, Azure Land.'
+	},
+	{
+		no: '02',
+		name: 'Dina Agustina',
+		title: 'Master of Financing',
+		excerpt: 'CEO of Agustina Offshore Financing, Calding Village. Arrived with hmgfan.'
+	},
+	{
+		no: '03',
+		name: 'Alisha Elliott',
+		title: 'Absolute Seductress',
+		excerpt: 'Influencer, venture capitalist, lobbyist, skill cultivator. Arrived one year after hmgfan.'
+	},
+	{
+		no: '04',
+		name: 'Takechi Hironaka',
+		title: 'Great Unifier',
+		excerpt: 'Prime Minister of Taihei. Arrived one year after hmgfan.'
+	},
+	{
+		no: '05',
+		name: 'Jenny Sinclair',
+		title: 'Relentless Actress',
+		excerpt: 'Elite actress and media personality. Arrived one year after hmgfan.'
+	},
+	{
+		no: '06',
+		name: 'Akari Hoshino',
+		title: 'Energetic Train Idol',
+		excerpt: 'Ex-idol and master train driver for Suichi Mining. Arrived one year after hmgfan.'
+	},
+	{
+		no: '07',
+		name: 'Mamiya Matsumoto',
+		title: 'Femme Fatale Oligarch',
+		excerpt: 'President of Argent Peaks. Arrived one year after hmgfan.'
+	},
+	{
+		no: '08',
+		name: 'Lisette Johanssen',
+		title: 'Digital Master',
+		excerpt: 'CEO and owner of Wraiting Inc. Arrived one year after hmgfan.'
+	},
+	{
+		no: '09',
+		name: 'Natalie Halsey-Taylor',
+		title: 'Logistics Queen',
+		excerpt: 'CEO and owner of HT Logistics. Arrived one year, two months after hmgfan.'
+	},
+	{
+		no: '10',
+		name: 'Lee Ji-ho',
+		title: 'Thorough Fullstacker',
+		excerpt: 'Senior fullstack programmer, self-employed. Arrived one year, two months after hmgfan.'
+	},
+	{
+		no: '11',
+		name: 'Aika Yukimura',
+		title: 'Master Influencer',
+		excerpt: 'Influencer and celebrity. Arrived one year, three months after hmgfan.'
+	},
+	{
+		no: '12',
+		name: 'Katarina Petrenko',
+		title: 'Smoke Signal',
+		excerpt: 'Soldier and mechanized infantry engineer. Arrived one year, three months after hmgfan.'
+	}
+];
+---
+
+<section class="border-b border-border-subtle" style="background-color: var(--color-bg-secondary);">
+	<div class="container-archival py-14 md:py-20">
+		<ArchiveHeader
+			archiveId="004"
+			category="The Summoned"
+			title="The Earthians"
+			subtitle="Pulled from nothingness. Bound to this world."
+		/>
+		<p class="mb-8 max-w-2xl text-sm leading-relaxed text-text-secondary md:text-base">
+			They are non-fictional people from Earth, summoned via The Summoning. Each is created
+			from nothingness, not pulled from their original universe, and bears a unique title. None
+			wishes to return home.
+		</p>
+		<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+			{
+				earthians.map((person) => (
+					<article class="group flex flex-col gap-2 border border-border-subtle bg-bg-primary p-4 transition-colors duration-200 hover:border-accent-gold">
+						<span class="font-mono text-[0.65rem] tracking-[0.1em] text-text-muted uppercase">
+							Earthian / {person.no}
+						</span>
+						<h3 class="font-display text-base leading-snug text-text-primary transition-colors duration-200 group-hover:text-accent-gold">
+							{person.name}
+						</h3>
+						<p class="font-mono text-[0.7rem] tracking-[0.05em] text-accent-gold uppercase">
+							{person.title}
+						</p>
+						<p class="text-xs leading-relaxed text-text-secondary">{person.excerpt}</p>
+					</article>
+				))
+			}
+		</div>
+	</div>
+</section>
