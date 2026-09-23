@@ -1,6 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import ArchiveHeader from './ArchiveHeader.astro';
 import LoreCard from './LoreCard.astro';
+import institutionsBanner from '../assets/banners/institutions.jpg';
 
 // Institutions per Fablea_tidied.md. Featured cards span two columns (R-14:
 // hierarchy signal, not uniform grid).
@@ -65,6 +67,12 @@ const institutions = [
 			category="Factions & Institutions"
 			title="Powers Behind the Realm"
 			subtitle="The forces that drive Fablea's economy and conflict"
+		/>
+		<Image
+			src={institutionsBanner}
+			alt=""
+			class="mb-10 h-40 w-full rounded-arch object-cover md:h-56"
+			widths={[640, 1280, 1600]}
 		/>
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 			{

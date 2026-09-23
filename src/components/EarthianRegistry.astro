@@ -1,6 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import ArchiveHeader from './ArchiveHeader.astro';
 import LoreCard from './LoreCard.astro';
+import earthiansBanner from '../assets/banners/earthians.jpg';
 
 // All 12 Earthians per Fablea_tidied.md. Arrival offsets are relative to hmgfan.
 const earthians = [
@@ -86,6 +88,12 @@ const earthians = [
 			category="The Summoned"
 			title="The Earthians"
 			subtitle="Pulled from nothingness. Bound to this world."
+		/>
+		<Image
+			src={earthiansBanner}
+			alt=""
+			class="mb-8 h-40 w-full rounded-arch object-cover md:h-56"
+			widths={[640, 1280, 1600]}
 		/>
 		<p class="mb-8 max-w-2xl text-sm leading-relaxed text-text-secondary md:text-base">
 			They are non-fictional people from Earth, summoned via The Summoning. Each is created

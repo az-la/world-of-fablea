@@ -1,143 +1,35 @@
-# Main Page Rewrite with Tailwind: Implementation Plan
+# Dashboard Color Match, Section Banners, Image-Component Migration
 
-## Context
-Rewriting World of Fablea main page using Tailwind CSS, following DESIGN.md specifications and HomepageBeats.md structure, with antislop principles applied DURING development.
+## 1. World Status Dashboard background → dissolve color
+The hero fades out into `#0B0F19` (bg-primary), and "Explore Fablea" shows exactly that by carrying no background of its own. Do the same for the dashboard:
 
-**Current State**: Astro 7.3.3, vanilla CSS with custom properties, 4-section flow (Hero → Dashboard → Map → Earthian Registry)
+- `WorldStatusDashboard.astro:14` — drop the inline `style="background-color: var(--color-bg-secondary);"` so the section inherits the body's `bg-primary`, matching the RegionsGrid idiom. Keep its `border-b` to separate it from Explore Fablea.
+- `HeroSection.astro:8` — remove `border-b border-border-subtle` from the hero section. Same-color neighbors plus the 1px rule would leave a visible hairline across the dissolve; without it the fade melts straight into the dashboard.
+- Check after: `DataGrid` cells are `bg-bg-primary p-4` on a `gap-px bg-border-subtle` frame, so they'll merge with the section and the grid stays readable via 1px rules only. No change unless it looks broken in the browser.
 
-**New Structure** (HomepageBeats.md): 6 sections
-1. Hero Section: "The Hook"
-2. World Status Dashboard
-3. Explore Fablea: Key Regions
-4. The Earthians: The Summoned (12 Earthians)
-5. Factions & Institutions
-6. Restricted Archives: Deep Lore Hooks
+## 2. Hero image → `astro:assets` `Image` component (Astro audit note)
+- `git mv public/images/hero-bg.webp src/assets/hero-bg.webp` (files in `public/` can't be optimized; `src/assets/` can).
+- In `HeroSection.astro`: `import heroBg from '../assets/hero-bg.webp'`, delete the `BASE_URL` string-building lines, and swap the `<img>` for:
+  `<Image src={heroBg} alt="" class="absolute inset-0 h-full w-full object-cover opacity-40" cover={{ width: 2560, height: 1440 }} fetchpriority="high" />`
+  (`cover` emits a responsive srcset; `sharp` is already installed so optimization runs.)
+- The masked wrapper, scrim, wash, and grid layers stay exactly as they are.
 
-## Design System (DESIGN.md)
+## 3. Placeholder banners from picsum.photos (one per section, 3 files)
+Download three fixed picsum photos (pinned `/id/{n}/1600/600` landscape endpoints, chosen so each reads atmospherically) into `src/assets/banners/`:
+- `regions.jpg` → Explore Fablea
+- `earthians.jpg` → The Earthians
+- `institutions.jpg` → Powers Behind the Realm
 
-**Typography**:
-- Display: Playfair Display (archival elegance for titles)
-- Body: Inter (clean readability for data)
-- Metadata: JetBrains Mono (archival metadata aesthetic)
+Render each as a full-width strip inside the section container, between `ArchiveHeader` and the card grid: `<Image src={banner} alt="" cover={{ width: 1600, height: 600 }} class="mb-10 h-40 w-full rounded-arch object-cover md:h-56" />` (`rounded-arch` uses the existing but currently unused `--radius-arch: 4px` token). `alt=""` for now since the photos are placeholders; real captions come with the user's own images.
 
-**Color Palette** (Deep Archive Dark Mode):
-- bg-primary: #0B0F19, bg-secondary: #111827, bg-tertiary: #1F2937
-- text-primary: #F8FAFC, text-secondary: #94A3B8
-- accent-azure: #38BDF8 (navigation), accent-gold: #FBBF24 (Earthian emphasis)
-- accent-restricted: #EF4444 (deep lore mystery)
-- border-subtle: #334155
+Components touched: `RegionsGrid.astro`, `EarthianRegistry.astro`, `InstitutionsGrid.astro` — each imports its banner from `../assets/banners/`. To swap in their own image later, the user overwrites the same filename (same extension) — no code edit needed; a different format means one import-line change, which I'll call out in delivery.
 
-**Layout**: 1200px max-width, 1.5rem grid gap, 4rem vertical section padding
+## 4. Verification
+- Dev server is already running on :4321; via browser evaluate confirm: dashboard computed background equals `rgb(11, 15, 25)` (same as hero/body), the hero renders an `<img>` with a generated optimized `srcset`, all three banners load with nonzero natural width/height, no horizontal overflow.
+- `npx astro build` must pass clean.
+- Report the picsum ids used and the exact banner filenames/locations for replacement.
 
-**Liveliness Dials**: ENERGY 2 (Balanced), RHYTHM 2 (Consistent with breaks), MOTION 1 (Hover only)
-
-## Implementation Steps
-
-### Phase 1: Tailwind Setup
-1. Install: `npx astro add tailwind`
-2. Configure `tailwind.config.mjs`:
-   - Map DESIGN.md colors to theme
-   - Add font families (display/sans/mono)
-   - Set container max-width 1200px
-3. Update `src/styles/global.css` with Tailwind directives
-4. **Antislop R-06**: Typography chosen for brand character, not defaults. Reason documented.
-
-### Phase 2: Component Architecture
-
-**New/Refactored Components**:
-
-1. **ArchiveHeader.astro** - Metadata span + display title with border separator
-2. **StatusBadge.astro** (refactor) - Pill with left-border variants, real status only (R-09)
-3. **LoreCard.astro** - Card with meta, title, excerpt, link. Hover lift. Real hrefs required (R-26)
-4. **DataGrid.astro** - Key-value pairs for dashboard, responsive stacking
-5. **RestrictedFileBlock.astro** - Restricted tint, dashed border, functional mystery (R-01 purpose: intentional intrigue)
-
-**Antislop R-31**: Every component purpose documented.
-
-### Phase 3: Section Implementation
-
-#### Section 1: Hero (The Hook)
-- ArchiveHeader: "ARCHIVE 001 / THE WORLD" + "Where stories breathe"
-- 3 paragraphs: Fablea intro (living testament, fictional characters, yachting culture)
-- No generic CTA unless content demands (R-15)
-- Typography hierarchy: One focal point (title)
-- No em dash (R-02)
-
-#### Section 2: World Status Dashboard
-- DataGrid with 5 items from HomepageBeats.md
-- Monospace keys (archival metadata), sans-serif values
-- Vertical separators on desktop, stack on mobile
-- All data real from lore (R-17)
-
-#### Section 3: Explore Fablea: Key Regions
-- Grid: 6-8 region cards (Azure Land, Taihei, Twin Isles, Crimson Wasteland, etc.)
-- LoreCard components with varied heights (not uniform R-14)
-- Real hrefs to /regions/* or "Coming soon" label (R-24, R-26)
-- 3-column desktop, 2-col tablet, 1-col mobile
-- Composition varies from previous sections (RHYTHM 2)
-
-#### Section 4: The Earthians (12 from Fablea_tidied.md)
-- Intro: "Pulled from nothingness. Bound to this world."
-- 4-column dense grid (denser than regions)
-- Gold accent for titles (hierarchy: Earthian importance)
-- Monospace metadata "EARTHIAN / 01"
-- No fake avatars (R-23)
-- All names/data real from lore (R-18, R-38)
-
-#### Section 5: Factions & Institutions
-- 6-8 institution cards (Income Makers, Azure Navy, K-Cruises, Teruhashi Conglomerate, etc.)
-- 2-column grid for emphasis (asymmetric composition)
-- Varied card sizes (R-14)
-- StatusBadge for types (INSTITUTION/MILITARY/ALLIANCE)
-- Different grid pattern = RHYTHM 2 compliance
-
-#### Section 6: Restricted Archives
-- Darker section background (bg-primary vs bg-secondary)
-- 2 RestrictedFileBlock cards: The Ascender, Seapoint Estate
-- Styling: bg-accent-restricted/5, border-dashed, "ACCESS RESTRICTED" badge
-- Purpose documented (R-01, R-31): functional mystery for deep lore
-- Distinct composition: darker, fewer items, larger cards (RHYTHM 2)
-
-### Phase 4: Responsive & Accessibility
-
-**Responsive (R-03)**:
-- Mobile breakpoint: 768px (Tailwind md:)
-- No horizontal overflow, text stays in containers
-- Touch targets minimum 44px
-- Spacing consistent across breakpoints
-
-**Accessibility (R-25, R-32)**:
-- Color contrast: WCAG AA (4.5:1 normal, 3:1 large)
-- Keyboard: Tab navigation, Enter/Space activation, Escape for modals
-- Focus rings: focus:outline-2 focus:outline-accent-azure focus:outline-offset-2
-- ARIA: StatusBadge aria-label, decorative elements aria-hidden
-
-### Phase 5: Verification (R-35)
-
-Before delivery:
-1. Run `npm run dev`
-2. Click every link, verify destination or "Coming soon" label
-3. Test mobile breakpoint
-4. Tab through with keyboard only
-5. Check console for errors
-6. Record click-through results
-
-**Delivery Gate checklist**: All Hard Gate items NO, all Purpose-Gate items have written reasons, all Liveliness items YES, all Craftsmanship items pass.
-
-## File Changes
-
-**New**: tailwind.config.mjs, ArchiveHeader.astro, DataGrid.astro, LoreCard.astro, RestrictedFileBlock.astro, RegionsGrid.astro, InstitutionsGrid.astro, RestrictedArchives.astro
-
-**Modified**: package.json, astro.config.mjs, global.css, index.astro, HeroSection.astro, WorldStatusDashboard.astro, StatusBadge.astro, EarthianRegistry.astro (reuse as EarthianRegistryPreview), Layout.astro
-
-**Deprecated**: WorldMap.astro (replaced by RegionsGrid), ArchiveCard.astro (replaced by LoreCard)
-
-## Antislop Compliance
-
-✓ Design direction: DESIGN.md + HomepageBeats.md + Fablea_tidied.md (R-37)
-✓ Typography: Brand character documented (R-06)
-✓ Colors: 2 core + 2 accent, purposeful (R-01, R-29)
-✓ Layout: Content-driven, varied rhythm (R-05, RHYTHM 2)
-✓ Components: Varied, not uniform (R-14, R-20)
-✓ Motion: Hover only (R-19, MOTION 1)
-✓ Content: All real from lore (R-17, R-18, R-36, R-38)
+## Files
+- Modified: `HeroSection.astro`, `WorldStatusDashboard.astro`, `RegionsGrid.astro`, `EarthianRegistry.astro`, `InstitutionsGrid.astro`
+- Added: `src/assets/hero-bg.webp` (moved), `src/assets/banners/{regions,earthians,institutions}.jpg`
+- Removed: `public/images/hero-bg.webp`
