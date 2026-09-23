@@ -16,7 +16,6 @@ interface Props {
 }
 
 const { region } = Astro.props;
-const base = Astro.base;
 
 // Parse the body into sections. Each ## heading is a beat.
 // We split on ## so we can render each section independently.
@@ -167,7 +166,7 @@ const isPending = region.status === 'pending';
 		<!-- Beat 7: Back to Key Regions -->
 		<div class="mt-14 border-t border-border-subtle pt-6">
 			<a
-				href={`${base}/#regions`}
+				href={`./#regions`}
 				class="link-hover-underline font-mono text-xs tracking-[0.1em] text-accent-azure uppercase transition-colors duration-200 hover:text-accent-gold"
 			>
 				Back to Key Regions
