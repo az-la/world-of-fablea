@@ -4,6 +4,8 @@ import ArchiveHeader from './ArchiveHeader.astro';
 import LoreCard from './LoreCard.astro';
 import regionsBanner from '../assets/banners/regions.jpg';
 import { regions, slugify } from '../data/lore';
+
+const base = Astro.base;
 ---
 
 <section id="regions" class="border-b border-border-subtle">
@@ -30,7 +32,7 @@ import { regions, slugify } from '../data/lore';
 						excerpt={region.excerpt}
 						status={region.status}
 						statusLabel={region.statusLabel}
-						comingSoon
+						href={`${base}/regions/${slugify(region.title)}`}
 						anchor={`regions-${slugify(region.title)}`}
 					/>
 				))

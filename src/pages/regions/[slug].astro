@@ -1,0 +1,190 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ArchiveHeader from '../../components/ArchiveHeader.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import { regions, slugify } from '../../data/lore';
+
+export function getStaticPaths() {
+	return regions.map((region) => ({
+		params: { slug: slugify(region.title) },
+		props: { region }
+	}));
+}
+
+interface Props {
+	region: typeof regions[number];
+}
+
+const { region } = Astro.props;
+const base = Astro.base;
+
+// Parse the body into sections. Each ## heading is a beat.
+// We split on ## so we can render each section independently.
+const bodySections = region.body
+	? region.body
+			.split(/\n(?=## )/)
+			.map((block) => {
+				const headingMatch = block.match(/^## (.+)/);
+				const heading = headingMatch ? headingMatch[1] : '';
+				const content = headingMatch
+					? block.replace(/^## .+\n?/, '').trim()
+					: block.trim();
+				return { heading, content };
+			})
+			.filter((s) => s.heading || s.content)
+	: [];
+
+// Determine if this is a restricted region for the callout treatment.
+const isRestricted = region.status === 'restricted';
+const isPending = region.status === 'pending';
+---
+
+<Layout
+	title={`${region.title} — World of Fablea: Archival Database`}
+	description={`Dossier ${region.id}: ${region.excerpt}`}
+>
+	<div class="container-archival py-14 md:py-20">
+		<!-- Beat 1: ArchiveHeader -->
+		<ArchiveHeader
+			archiveId={region.id}
+			category="REGION"
+			title={region.title}
+		/>
+
+		<!-- Beat 2: StatusBadge flush above display title -->
+		<div class="-mt-6 mb-6">
+			<StatusBadge
+				label={region.statusLabel}
+				variant={region.status}
+			/>
+		</div>
+
+		<!-- Beat 3: Lead blurb (the grid excerpt) -->
+		<p class="mb-6 max-w-3xl text-base leading-relaxed text-text-secondary">
+			{region.excerpt}
+		</p>
+
+		<!-- Beat 4: Marker line -->
+		{region.marker && (
+			<p class="mb-10 font-mono text-xs tracking-[0.1em] text-text-muted uppercase">
+				{region.marker}
+			</p>
+		)}
+
+		<!-- Beat 5: RegionDetail body -->
+		{bodySections.length > 0 ? (
+			<div class="region-detail space-y-10">
+				{
+					bodySections.map((section) => (
+						<section class="border-l-2 border-border-subtle pl-5">
+							<h2 class="mb-4 font-display text-2xl leading-snug text-text-primary">
+								{section.heading}
+							</h2>
+							<div class="prose-custom">
+								{section.content.split('\n').map((line) => {
+									const trimmed = line.trim();
+									if (!trimmed) return null;
+
+									// Bullet list items
+									if (trimmed.startsWith('- ')) {
+										return (
+											<p class="ml-4 text-sm leading-relaxed text-text-secondary">
+												{trimmed.slice(2)}
+											</p>
+										);
+									}
+
+									// Bold sub-headings (Major Sites entries, etc.)
+									if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
+										return (
+											<h3 class="mt-4 mb-2 font-display text-lg text-text-primary">
+												{trimmed.replace(/\*\*/g, '')}
+											</h3>
+										);
+									}
+
+									// NOT ON FILE marker
+									if (trimmed === 'NOT ON FILE') {
+										return (
+											<p class="font-mono text-xs tracking-[0.1em] text-text-muted uppercase">
+												NOT ON FILE
+											</p>
+										);
+									}
+
+									// Regular paragraph
+									return (
+										<p class="text-sm leading-relaxed text-text-secondary">
+											{trimmed}
+										</p>
+									);
+								})}
+							</div>
+						</section>
+					))
+				}
+			</div>
+		) : (
+			// Empty body fallback
+			<p class="font-mono text-xs tracking-[0.1em] text-text-muted uppercase">
+				NOT ON FILE
+			</p>
+		)}
+
+		<!-- Beat 8: Restrictions callout for restricted regions -->
+		{isRestricted && (
+			<div class="relative mt-10 flex flex-col gap-4 border border-dashed border-accent-restricted bg-accent-restricted/5 p-6">
+				<div class="flex items-center justify-between gap-2">
+					<span class="font-mono text-[0.65rem] tracking-[0.1em] text-accent-restricted uppercase">
+						File / {region.id}
+					</span>
+					<StatusBadge label="Access restricted" variant="restricted" />
+				</div>
+				<p class="text-sm leading-relaxed text-text-secondary">
+					The Crimson Wasteland is a no-man's-land. Artifacts spawn for limited time windows. Entry is not advised without proper authorization and preparation.
+				</p>
+				<p class="mt-auto font-mono text-xs tracking-[0.08em] text-text-muted uppercase">
+					Access: Restricted
+				</p>
+			</div>
+		)}
+
+		<!-- Pending notice for pending regions -->
+		{isPending && (
+			<div class="relative mt-10 flex flex-col gap-4 border border-dashed border-accent-gold bg-accent-gold/5 p-6">
+				<div class="flex items-center justify-between gap-2">
+					<span class="font-mono text-[0.65rem] tracking-[0.1em] text-accent-gold uppercase">
+						File / {region.id}
+					</span>
+					<StatusBadge label="Archive pending" variant="pending" />
+				</div>
+				<p class="text-sm leading-relaxed text-text-secondary">
+					This dossier is incomplete. Further information has not yet been filed. Check back for updates.
+				</p>
+			</div>
+		)}
+
+		<!-- Beat 7: Back to Key Regions -->
+		<div class="mt-14 border-t border-border-subtle pt-6">
+			<a
+				href={`${base}/#regions`}
+				class="link-hover-underline font-mono text-xs tracking-[0.1em] text-accent-azure uppercase transition-colors duration-200 hover:text-accent-gold"
+			>
+				Back to Key Regions
+			</a>
+		</div>
+	</div>
+</Layout>
+
+<style is:global>
+	/* Prose styling for region detail body content */
+	.prose-custom p + p {
+		margin-top: 0.5rem;
+	}
+	.prose-custom h3 + p {
+		margin-top: 0.25rem;
+	}
+	.prose-custom p:first-child {
+		margin-top: 0;
+	}
+</style>
