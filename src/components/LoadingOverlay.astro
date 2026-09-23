@@ -1,0 +1,11 @@
+---
+// LoadingOverlay: pulsing monospace text overlay shown during page load.
+// Fades out when <html> receives data-loaded="true" (set by the inline
+// script in Layout.astro once window.load fires).
+---
+
+<div class="loading-overlay fixed inset-0 z-[45] flex items-center justify-center bg-bg-primary transition-opacity duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]">
+  <span class="font-mono text-xs tracking-[0.15em] text-text-secondary uppercase animate-pulse">
+    Decrypting Archive...
+  </span>
+</div>

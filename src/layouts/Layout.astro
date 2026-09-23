@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import LoadingOverlay from '../components/LoadingOverlay.astro';
 import FloatingNav from '../components/FloatingNav.astro';
 
 interface Props {
@@ -34,6 +35,25 @@ const {
 		/>
 	</head>
 	<body>
+		<LoadingOverlay />
+		<script is:raw>
+			// Set data-loaded on <html> so CSS transitions can run.
+			// Minimum 800ms display ensures the loading overlay is visible even
+			// on local/fast loads; on deployed sites, actual resource load time
+			// typically exceeds this, so it acts as a floor, not a cap.
+			(function() {
+				var setLoaded = function() {
+					document.documentElement.setAttribute('data-loaded', 'true');
+				};
+				if (document.readyState === 'complete') {
+					setTimeout(setLoaded, 800);
+				} else {
+					window.addEventListener('load', function() {
+						setTimeout(setLoaded, 800);
+					});
+				}
+			})();
+		</script>
 		<a href="#main" class="skip-link">Skip to content</a>
 		<FloatingNav />
 		<main id="main">

@@ -112,4 +112,86 @@
       display: none;
     }
   }
+
+  /* ============================================================
+   * DESIGN.md §7: Micro-interactions & Animations
+   * ============================================================ */
+
+  /* Loading overlay pulse (DESIGN.md §7: Loading States) */
+  @keyframes pulse-text {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+  .animate-pulse-text {
+    animation: pulse-text 1.5s ease-in-out infinite;
+  }
+
+  /* Page load: staggered fade-in + upward translate (DESIGN.md §7: Page Load) */
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(0.625rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Base animation: applied once the page has loaded (data-loaded attr set) */
+  :root[data-loaded='true'] .loading-overlay {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Staggered entry animations — triggered on load via data-loaded attribute.
+     Start 350ms after data-loaded (after overlay fade-out completes),
+     then stagger by 50ms between sections for the cascade sequence. */
+  :root[data-loaded='true'] .fade-in-up {
+    animation: fade-in-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both;
+  }
+  .fade-in-up-delay-0 { animation-delay: 0.00s; }
+  .fade-in-up-delay-1 { animation-delay: 0.05s; }
+  .fade-in-up-delay-2 { animation-delay: 0.10s; }
+  .fade-in-up-delay-3 { animation-delay: 0.15s; }
+  .fade-in-up-delay-4 { animation-delay: 0.20s; }
+  .fade-in-up-delay-5 { animation-delay: 0.25s; }
+  .fade-in-up-delay-6 { animation-delay: 0.30s; }
+
+  /* Link hover: underline expands left-to-right (DESIGN.md §7: Link Hover) */
+  .link-hover-underline {
+    position: relative;
+  }
+  .link-hover-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 0;
+    height: 1px;
+    background-color: currentColor;
+    transition: width 0.2s ease-in-out;
+  }
+  .link-hover-underline:hover::after,
+  :root[data-loaded='true'] .link-hover-underline::after {
+    width: 100%;
+  }
+
+  /* Reduced motion guard — disable all non-essential animations */
+  @media (prefers-reduced-motion: reduce) {
+    .loading-overlay,
+    .fade-in-up,
+    .link-hover-underline {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    .loading-overlay {
+      transition: none;
+    }
+    .link-hover-underline::after {
+      width: 100%;
+      transition: none;
+    }
+  }
 }
