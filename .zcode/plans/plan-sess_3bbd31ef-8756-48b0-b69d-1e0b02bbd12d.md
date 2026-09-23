@@ -1,35 +1,41 @@
-# Dashboard Color Match, Section Banners, Image-Component Migration
+# Floating Navbar + Site-wide Scanlines
 
-## 1. World Status Dashboard background → dissolve color
-The hero fades out into `#0B0F19` (bg-primary), and "Explore Fablea" shows exactly that by carrying no background of its own. Do the same for the dashboard:
+## 1. Single source of truth for nav data — `src/data/lore.ts` (new)
+The dropdowns must list the same entries the sections render, with real anchor targets (antislop R-24: no dead navigation). Extract the arrays currently inline in component frontmatter:
+- `regions` (6), `earthians` (12), `institutions` (6) move out of `RegionsGrid.astro` / `EarthianRegistry.astro` / `InstitutionsGrid.astro`; `restrictedFiles` (The Ascender, Seapoint Estate) out of `RestrictedArchives.astro`. Those four components import the data back; rendering is unchanged.
+- Add `slugify(title)` and `navGroups`: one entry per section with `key` (`regions`/`earthians`/`powers`/`restricted`), section `href` (`#regions` etc.), and `items: { label, anchor }` where `anchor = \`${key}-${slugify(title)}\`` (e.g. `#regions-azure-land`, `#earthians-takechi-hironaka`, `#restricted-the-ascender`).
 
-- `WorldStatusDashboard.astro:14` — drop the inline `style="background-color: var(--color-bg-secondary);"` so the section inherits the body's `bg-primary`, matching the RegionsGrid idiom. Keep its `border-b` to separate it from Explore Fablea.
-- `HeroSection.astro:8` — remove `border-b border-border-subtle` from the hero section. Same-color neighbors plus the 1px rule would leave a visible hairline across the dissolve; without it the fade melts straight into the dashboard.
-- Check after: `DataGrid` cells are `bg-bg-primary p-4` on a `gap-px bg-border-subtle` frame, so they'll merge with the section and the grid stays readable via 1px rules only. No change unless it looks broken in the browser.
+## 2. Anchors on real destinations
+- Section ids: `RegionsGrid` → `id="regions"`, `EarthianRegistry` → `id="earthians"`, `InstitutionsGrid` → `id="powers"`, `RestrictedArchives` → `id="restricted"`.
+- Card ids: `LoreCard.astro` and `RestrictedFileBlock.astro` get an optional `anchor` prop rendered as `id` on the `<article>`; `EarthianRegistry`'s inline cards get `id={anchor}`. Every dropdown link therefore scrolls to its actual card.
+- `global.css` base: `[id] { scroll-margin-top: 5rem }` so the fixed bar never covers the heading on jump (`scroll-behavior: smooth` already exists).
 
-## 2. Hero image → `astro:assets` `Image` component (Astro audit note)
-- `git mv public/images/hero-bg.webp src/assets/hero-bg.webp` (files in `public/` can't be optimized; `src/assets/` can).
-- In `HeroSection.astro`: `import heroBg from '../assets/hero-bg.webp'`, delete the `BASE_URL` string-building lines, and swap the `<img>` for:
-  `<Image src={heroBg} alt="" class="absolute inset-0 h-full w-full object-cover opacity-40" cover={{ width: 2560, height: 1440 }} fetchpriority="high" />`
-  (`cover` emits a responsive srcset; `sharp` is already installed so optimization runs.)
-- The masked wrapper, scrim, wash, and grid layers stay exactly as they are.
+## 3. `src/components/FloatingNav.astro` (new), mounted in `Layout.astro`
+Floating bar: `position: fixed`, inset with margin (centered, `max-width: 1200px`), `rounded-arch` (the existing 4px token), `z-50`. Contents:
+- **Index**: brand link "Fablea Prime Archive" (mono, uppercase) → `Astro.baseUrl` (resolves `/world-of-fablea/` on GitHub Pages).
+- **Four groups** (desktop `lg+`): short labels `Regions`, `Earthians`, `Powers`, `Restricted`; each group = link to its section (`#regions`…) plus a chevron `button[aria-expanded][aria-controls]` opening a dropdown panel. Panel: `bg-bg-secondary`, `border-border-subtle`, one monospace link per card; Earthians panel is `max-h-[60vh] overflow-y-auto` for its 12 entries. Full section titles appear as the panel's header line.
+- **Mobile (< lg)**: same brand + hamburger button; a sheet below the bar with the groups stacked as the same disclosure pattern. Tap targets ≥ 44px.
+- **States**: no-JS-safe — without the script, panels stay closed but section links still work. Script (plain `<script>`, no framework):
+  - scroll state: passive listener + rAF toggling `data-scrolled` at `scrollY > 24` (also on load, so reloads mid-page start correct).
+  - disclosures: click toggles; opening one closes others; Escape closes and restores focus; outside click closes; clicking a panel link closes the group.
+- **Azure on scroll** (user's choice): transparent bar with `#F8FAFC` text at top → `data-scrolled` swaps it to solid `#38BDF8` with `#0B0F19` text (≈10:1, AA). Transition `background-color/color/border-color 0.2s ease-in-out` per DESIGN §7, disabled under `prefers-reduced-motion`. Panels stay dark in both states (hierarchy). No backdrop-blur (antislop glassmorphism cap).
+- **Contrast/focus detail**: the global azure `:focus-visible` ring vanishes on the azure bar — override to a dark ring (`outline-color: var(--color-bg-primary)`) in the scrolled state. Include a "Skip to content" link.
+- Antislop notes: motion only in transitions (MOTION dial 1); one deliberate accent moment (the bar); flat panels with 1px borders, shadow only on dropdown elevation.
 
-## 3. Placeholder banners from picsum.photos (one per section, 3 files)
-Download three fixed picsum photos (pinned `/id/{n}/1600/600` landscape endpoints, chosen so each reads atmospherically) into `src/assets/banners/`:
-- `regions.jpg` → Explore Fablea
-- `earthians.jpg` → The Earthians
-- `institutions.jpg` → Powers Behind the Realm
+## 4. Faint scanlines across the site
+`Layout.astro` body gets `<div class="scanlines" aria-hidden="true"></div>` (after the slot); CSS in `global.css`:
+```css
+.scanlines {
+  position: fixed; inset: 0; z-index: 30; pointer-events: none;
+  background-image: repeating-linear-gradient(to bottom,
+    rgba(148,163,184,0.035) 0 1px, transparent 1px 3px);
+}
+```
+Static CRT texture at ~3.5% slate: visible over both bg-primary and bg-secondary sections without touching AA contrast; sits below the navbar (z-50) so nav/dropdowns stay crisp; `@media print { display: none }`. Motif is sanctioned by DESIGN.md §6.5 (scanline overlay); the reason goes in a CSS comment (R-07).
 
-Render each as a full-width strip inside the section container, between `ArchiveHeader` and the card grid: `<Image src={banner} alt="" cover={{ width: 1600, height: 600 }} class="mb-10 h-40 w-full rounded-arch object-cover md:h-56" />` (`rounded-arch` uses the existing but currently unused `--radius-arch: 4px` token). `alt=""` for now since the photos are placeholders; real captions come with the user's own images.
+## 5. Files
+- New: `src/data/lore.ts`, `src/components/FloatingNav.astro`
+- Modified: `src/layouts/Layout.astro`, `src/styles/global.css`, `src/components/{RegionsGrid,EarthianRegistry,InstitutionsGrid,RestrictedArchives,LoreCard,RestrictedFileBlock}.astro`
 
-Components touched: `RegionsGrid.astro`, `EarthianRegistry.astro`, `InstitutionsGrid.astro` — each imports its banner from `../assets/banners/`. To swap in their own image later, the user overwrites the same filename (same extension) — no code edit needed; a different format means one import-line change, which I'll call out in delivery.
-
-## 4. Verification
-- Dev server is already running on :4321; via browser evaluate confirm: dashboard computed background equals `rgb(11, 15, 25)` (same as hero/body), the hero renders an `<img>` with a generated optimized `srcset`, all three banners load with nonzero natural width/height, no horizontal overflow.
-- `npx astro build` must pass clean.
-- Report the picsum ids used and the exact banner filenames/locations for replacement.
-
-## Files
-- Modified: `HeroSection.astro`, `WorldStatusDashboard.astro`, `RegionsGrid.astro`, `EarthianRegistry.astro`, `InstitutionsGrid.astro`
-- Added: `src/assets/hero-bg.webp` (moved), `src/assets/banners/{regions,earthians,institutions}.jpg`
-- Removed: `public/images/hero-bg.webp`
+## 6. Verification (programmatic; no screenshot viewing on this model)
+Via the running dev server + browser evaluate: nav is fixed and `data-scrolled` + computed `rgb(56, 189, 248)` background appear after scrolling and clear at top; **every** dropdown/section href resolves to a real `getElementById` (zero dead anchors); Escape/outside-click close panels; no horizontal overflow at 375/768/1280; `npx astro build` passes clean.

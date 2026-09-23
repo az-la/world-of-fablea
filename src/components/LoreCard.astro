@@ -10,6 +10,8 @@ interface Props {
 	statusLabel?: string;
 	href?: string;
 	comingSoon?: boolean;
+/** Card anchor used by navbar dropdowns. */
+anchor?: string;
 	'class'?: string;
 }
 
@@ -22,11 +24,13 @@ const {
 	statusLabel,
 	href,
 	comingSoon = false,
+	anchor,
 	class: extraClass = ''
 } = Astro.props;
 ---
 
 <article
+	id={anchor}
 	class:list={[
 		'group flex flex-col gap-4 border border-border-subtle bg-bg-secondary p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-accent-azure',
 		extraClass

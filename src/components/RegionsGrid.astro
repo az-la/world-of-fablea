@@ -3,61 +3,10 @@ import { Image } from 'astro:assets';
 import ArchiveHeader from './ArchiveHeader.astro';
 import LoreCard from './LoreCard.astro';
 import regionsBanner from '../assets/banners/regions.jpg';
-
-// All data sourced from Fablea_tidied.md (the lore source of record).
-const regions = [
-	{
-		id: 'R-01',
-		title: 'Azure Land',
-		excerpt:
-			'Tropical, tourism-oriented maritime nation. Yachting culture, naval exploration, eco-integrated technology. Lawful neutral stance.',
-		status: 'active',
-		statusLabel: 'Active'
-	},
-	{
-		id: 'R-02',
-		title: 'Taihei',
-		excerpt:
-			'Faction-state on the southern Twin Isles. Administered east by the Omi Alliance, west by Mankai-no-Wa. Led by Earthian PM Takechi Hironaka.',
-		status: 'active',
-		statusLabel: 'Active'
-	},
-	{
-		id: 'R-03',
-		title: 'Twin Isles',
-		excerpt:
-			'Two identical islands at the center of the open ocean. Small hills, rich vegetation, and exotic species found nowhere on Earth.',
-		status: 'active',
-		statusLabel: 'Active'
-	},
-	{
-		id: 'R-04',
-		title: 'Crimson Wasteland',
-		excerpt:
-			"No-man's-land 3,000 km north of the Twin Isles. Red terrain, roaming beasts, and artifacts that spawn for a limited time.",
-		status: 'restricted',
-		statusLabel: 'Restricted'
-	},
-	{
-		id: 'R-05',
-		title: 'Suichi Island',
-		excerpt:
-			'Large island 350 km southeast of the Twin Isles. Nanomaterial mining at its center, Azure Navy castles on the northern cape, beaches to the southeast.',
-		status: 'active',
-		statusLabel: 'Active'
-	},
-	{
-		id: 'R-06',
-		title: 'Star Land',
-		excerpt:
-			'A star-shaped island with a large central lake, devoid of humans, 3,000 km east of the Twin Isles. A replica of Hoshinomiya Girls\' High School sits on the south shore.',
-		status: 'pending',
-		statusLabel: 'Archive pending'
-	}
-];
+import { regions, slugify } from '../data/lore';
 ---
 
-<section class="border-b border-border-subtle">
+<section id="regions" class="border-b border-border-subtle">
 	<div class="container-archival py-14 md:py-20">
 		<ArchiveHeader
 			archiveId="003"
@@ -82,6 +31,7 @@ const regions = [
 						status={region.status}
 						statusLabel={region.statusLabel}
 						comingSoon
+						anchor={`regions-${slugify(region.title)}`}
 					/>
 				))
 			}

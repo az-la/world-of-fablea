@@ -1,9 +1,10 @@
 ---
 import ArchiveHeader from './ArchiveHeader.astro';
 import RestrictedFileBlock from './RestrictedFileBlock.astro';
+import { restrictedFiles, slugify } from '../data/lore';
 ---
 
-<section class="border-b border-border-subtle" style="background-color: var(--color-bg-primary);">
+<section id="restricted" class="border-b border-border-subtle" style="background-color: var(--color-bg-primary);">
 	<div class="container-archival py-14 md:py-20">
 		<ArchiveHeader
 			archiveId="006"
@@ -12,19 +13,18 @@ import RestrictedFileBlock from './RestrictedFileBlock.astro';
 			subtitle="There are mechanics Fablea does not broadcast."
 		/>
 		<div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-			<RestrictedFileBlock
-				fileId="R-001"
-				title="The Ascender"
-				description="An ultra-special device reserved for Azure Navy higher-ups and hmgfan's already-ascended lovers. Upon activation, it grants the target vast, mana-enhanced power. The device is a floating box that spews cables to the target."
-				note="The Ascended remain strictly human. Godhood is an impossibility. Current Third Ascension slots: 0 of 4."
-				accessLabel="Invitation only"
-			/>
-			<RestrictedFileBlock
-				fileId="R-002"
-				title="Seapoint Estate"
-				description="Imperia's private 3-square-kilometer island, leased from Azure Land. A marvel of off-grid power, hidden coves, superyacht berths (DLux and SLux), and a fiercely loyal, superpower-equipped team led by Ho'olheyak."
-				accessLabel="Invitation only"
-			/>
+			{
+				restrictedFiles.map((file) => (
+					<RestrictedFileBlock
+						fileId={file.fileId}
+						title={file.title}
+						description={file.description}
+						note={file.note}
+						accessLabel={file.accessLabel}
+						anchor={`restricted-${slugify(file.title)}`}
+					/>
+				))
+			}
 		</div>
 	</div>
 </section>

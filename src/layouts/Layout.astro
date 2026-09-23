@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import FloatingNav from '../components/FloatingNav.astro';
 
 interface Props {
 	title?: string;
@@ -33,6 +34,14 @@ const {
 		/>
 	</head>
 	<body>
-		<slot />
+		<a href="#main" class="skip-link">Skip to content</a>
+		<FloatingNav />
+		<main id="main">
+			<slot />
+		</main>
+		<!-- Faint CRT scanline texture across the whole site (DESIGN.md §6.5
+		     sanctions the motif; kept static at ~3.5% opacity so it adds
+		     texture without breaking AA contrast). -->
+		<div class="scanlines" aria-hidden="true"></div>
 	</body>
 </html>

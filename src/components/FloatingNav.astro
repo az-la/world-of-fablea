@@ -1,0 +1,356 @@
+---
+// Floating navigation: transparent over the hero, black gradient after
+// ~24px of scroll (user choice). Dropdowns list the actual entries of each
+// section; data comes from the shared lore module so the links can't drift
+// from the sections.
+import { navGroups } from '../data/lore';
+
+const brandHref = `${Astro.baseUrl}/`;
+---
+
+<header id="nav" class="nav-archival" data-scrolled="false">
+	<nav aria-label="Primary">
+		<div class="rounded-arch relative border border-transparent px-4 py-3 sm:px-5">
+			<!-- The bar spans the viewport; the content aligns to the 1200px
+			     archival column the sections use. -->
+			<div class="mx-auto flex max-w-[1200px] items-center justify-between gap-4">
+				<a
+					href={brandHref}
+					class="whitespace-nowrap font-mono text-xs font-medium tracking-[0.2em] uppercase"
+					aria-label="Fablea Prime Archive, home"
+				>
+					Fablea <span class="nav-accent">Prime Archive</span>
+				</a>
+
+				<!-- Desktop groups -->
+				<div class="hidden items-center gap-2 lg:flex" role="menubar" aria-label="Sections">
+					{
+						navGroups.map((group) => (
+							<div class="relative">
+								<div class="flex items-center gap-1">
+									<a
+										href={group.href}
+										role="menuitem"
+										class="nav-link px-2.5 py-2 font-mono text-xs tracking-[0.1em] uppercase"
+									>
+										{group.label}
+									</a>
+									<button
+										type="button"
+										class="nav-toggle flex items-center px-1 py-2 font-mono text-[0.9rem] leading-none"
+										aria-expanded="false"
+										aria-controls={`panel-${group.key}`}
+										aria-label={`Show ${group.label} list`}
+									>
+										<span aria-hidden="true">▾</span>
+									</button>
+								</div>
+								<div
+									id={`panel-${group.key}`}
+									role="menu"
+									aria-label={group.sectionTitle}
+									class:list={[
+										'nav-panel absolute left-0 top-full z-10 pt-2',
+										group.key === 'earthians' ? 'nav-panel-scroll' : 'nav-panel-min'
+									]}
+								>
+									<div class="mb-1 border-b border-border-subtle pb-1 font-mono text-[0.65rem] tracking-[0.15em] text-text-muted uppercase">
+										{group.sectionTitle}
+									</div>
+									{
+										group.items.map((item) => (
+											<a
+												href={item.anchor}
+												role="menuitem"
+												class="nav-panel-link block px-3 py-1.5 font-mono text-xs tracking-[0.05em]"
+											>
+												{item.label}
+											</a>
+										))
+									}
+								</div>
+							</div>
+						))
+					}
+				</div>
+
+				<!-- Mobile toggle -->
+				<button
+					type="button"
+					id="nav-mobile-toggle"
+					class="flex items-center px-2 py-2 font-mono text-xs tracking-[0.1em] uppercase lg:hidden"
+					aria-expanded="false"
+					aria-controls="nav-mobile-sheet"
+				>
+					Menu
+					<span aria-hidden="true" class="ml-1">▾</span>
+				</button>
+			</div>
+
+			<!-- Mobile sheet: same groups stacked, 44px tap targets -->
+			<div id="nav-mobile-sheet" class="nav-panel nav-panel-min mt-3 p-4 lg:hidden">
+				{
+					navGroups.map((group) => (
+						<div class="border-b border-border-subtle py-2 last:border-b-0">
+							<div class="flex items-center justify-between">
+								<a
+									href={group.href}
+									class="flex min-h-[44px] items-center px-1 font-mono text-sm tracking-[0.1em] uppercase"
+								>
+									{group.label}
+								</a>
+								<button
+									type="button"
+									class="nav-toggle flex min-h-[44px] items-center px-3 py-2 font-mono text-xs uppercase"
+									aria-expanded="false"
+									aria-controls={`mobile-panel-${group.key}`}
+									aria-label={`Show ${group.label} list`}
+								>
+									<span aria-hidden="true">▾</span>
+								</button>
+							</div>
+							<div id={`mobile-panel-${group.key}`} class="nav-panel pl-2">
+								{
+									group.items.map((item) => (
+										<a
+											href={item.anchor}
+											class="flex min-h-[44px] items-center px-3 font-mono text-xs tracking-[0.05em] text-text-secondary"
+										>
+											{item.label}
+										</a>
+									))
+								}
+							</div>
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</nav>
+</header>
+
+<style is:global>
+	/* Floating bar: inset from the viewport edges on wide screens, full-bleed
+	   on phones so the brand and menu stay reachable. */
+	.nav-archival {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 50;
+		pointer-events: none;
+	}
+	.nav-archival nav {
+		pointer-events: auto;
+		margin-inline: 1rem;
+	}
+	@media (min-width: 640px) {
+		.nav-archival nav {
+			margin-inline: 2rem;
+		}
+	}
+
+	/* States: the bar is transparent at the top and fades to a black
+	   gradient after ~24px of scroll (JS toggles data-scrolled). The gradient
+	   lives on a ::before behind the text because background-image itself is
+	   not animatable. Dropdown panels and the mobile sheet stay bg-secondary
+	   in both states, so they read as a distinct surface on the bar. */
+	.nav-archival .rounded-arch {
+		transition: border-color 0.2s ease-in-out;
+	}
+	.nav-archival .rounded-arch::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: -1;
+		border-radius: inherit;
+		background-image: linear-gradient(
+			to bottom,
+			var(--color-bg-primary),
+			var(--color-bg-secondary)
+		);
+		opacity: 0;
+		transition: opacity 0.2s ease-in-out;
+	}
+	.nav-archival a,
+	.nav-archival button {
+		color: var(--color-text-primary);
+	}
+	.nav-archival .nav-link {
+		opacity: 0.85;
+		transition: opacity 0.2s ease-in-out;
+	}
+	.nav-archival .nav-link:hover,
+	.nav-archival .nav-link:focus-visible {
+		opacity: 1;
+	}
+	.nav-archival .nav-accent {
+		color: var(--color-accent-azure);
+	}
+	.nav-archival[data-scrolled='true'] .rounded-arch {
+		border-color: var(--color-border-subtle);
+	}
+	.nav-archival[data-scrolled='true'] .rounded-arch::before {
+		opacity: 1;
+	}
+
+	/* Panels stay dark in both states so they read as a distinct surface.
+	   Hidden by default: no-JS users keep working section links, and the
+	   panels are progressive enhancement. */
+	.nav-panel {
+		display: none;
+		background-color: var(--color-bg-secondary);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: var(--radius-arch);
+		box-shadow: 0 8px 24px rgb(0 0 0 / 0.4);
+	}
+	.nav-panel[aria-hidden='false'] {
+		display: block;
+	}
+	.nav-panel-scroll {
+		max-height: 60vh;
+		overflow-y: auto;
+		width: 16rem;
+		padding: 0.5rem;
+	}
+	.nav-panel-min {
+		min-width: 12rem;
+		padding: 0.5rem;
+	}
+	.nav-panel-link {
+		color: var(--color-text-secondary);
+		transition: color 0.2s ease-in-out;
+	}
+	.nav-panel-link:hover,
+	.nav-panel-link:focus-visible {
+		color: var(--color-accent-azure);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.nav-archival .rounded-arch,
+		.nav-archival .rounded-arch::before,
+		.nav-archival .nav-link,
+		.nav-panel-link {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	(function () {
+		const nav = document.getElementById('nav');
+		if (!nav) return;
+
+		/* Scroll state: gradient bar below the top. rAF-throttled. */
+		const SCROLL_THRESHOLD = 24;
+		let ticking = false;
+		const setScrolled = () => {
+			nav.dataset.scrolled = window.scrollY > SCROLL_THRESHOLD ? 'true' : 'false';
+			ticking = false;
+		};
+		const requestTick = () => {
+			if (!ticking) {
+				ticking = true;
+				requestAnimationFrame(setScrolled);
+			}
+		};
+		window.addEventListener('scroll', requestTick, { passive: true });
+		setScrolled();
+
+		/* Panel helpers: a toggle button plus the panel it controls. */
+		const panelOf = (button: HTMLElement) =>
+			document.getElementById(button.getAttribute('aria-controls') ?? '') as HTMLElement | null;
+
+		const closeToggle = (button: HTMLElement) => {
+			button.setAttribute('aria-expanded', 'false');
+			panelOf(button)?.setAttribute('aria-hidden', 'true');
+		};
+
+		const openToggle = (button: HTMLElement) => {
+			button.setAttribute('aria-expanded', 'true');
+			panelOf(button)?.setAttribute('aria-hidden', 'false');
+		};
+
+		/* Desktop: one open dropdown per menubar; the mobile sheet is separate. */
+		nav
+			.querySelectorAll('[role="menubar"] .nav-toggle')
+			.forEach((btn) =>
+				btn.addEventListener('click', () => {
+					const button = btn as HTMLElement;
+					const wasOpen = button.getAttribute('aria-expanded') === 'true';
+					nav
+						.querySelectorAll('[role="menubar"] .nav-toggle[aria-expanded="true"]')
+						.forEach((other) => closeToggle(other as HTMLElement));
+					if (!wasOpen) openToggle(button);
+				})
+			);
+
+		/* Mobile sheet: the bar's Menu button, plus per-group toggles inside it. */
+		const mobileToggle = document.getElementById('nav-mobile-toggle') as HTMLElement | null;
+		const mobileSheet = document.getElementById('nav-mobile-sheet') as HTMLElement | null;
+		if (mobileToggle && mobileSheet) {
+			mobileToggle.addEventListener('click', () => {
+				const isOpen = mobileToggle.getAttribute('aria-expanded') === 'true';
+				mobileToggle.setAttribute('aria-expanded', isOpen ? 'false' : 'true');
+				mobileSheet.setAttribute('aria-hidden', isOpen ? 'true' : 'false');
+				if (!isOpen) {
+					mobileSheet
+						.querySelectorAll('.nav-toggle[aria-expanded="true"]')
+						.forEach((btn) => closeToggle(btn as HTMLElement));
+				}
+			});
+			mobileSheet.querySelectorAll('.nav-toggle').forEach((btn) =>
+				btn.addEventListener('click', () => {
+					const button = btn as HTMLElement;
+					const wasOpen = button.getAttribute('aria-expanded') === 'true';
+					closeToggle(button);
+					if (!wasOpen) openToggle(button);
+				})
+			);
+		}
+
+	/* Outside click closes everything. */
+		const closeAllToggles = () => {
+			nav
+				.querySelectorAll('.nav-toggle[aria-expanded="true"]')
+				.forEach((btn) => closeToggle(btn as HTMLElement));
+		};
+
+		document.addEventListener('click', (event) => {
+			const target = event.target as HTMLElement;
+			if (target.closest('#nav')) return;
+			closeAllToggles();
+			if (mobileToggle && mobileSheet) {
+				mobileToggle.setAttribute('aria-expanded', 'false');
+				mobileSheet.setAttribute('aria-hidden', 'true');
+			}
+		});
+
+		/* Escape closes the open panel and returns focus to its toggle. */
+		document.addEventListener('keydown', (event) => {
+			if (event.key !== 'Escape') return;
+			const open = nav.querySelector<HTMLElement>('.nav-toggle[aria-expanded="true"]');
+			if (open) {
+				closeToggle(open);
+				open.focus();
+				return;
+			}
+			if (mobileToggle?.getAttribute('aria-expanded') === 'true' && mobileSheet) {
+				mobileToggle.setAttribute('aria-expanded', 'false');
+				mobileSheet.setAttribute('aria-hidden', 'true');
+				mobileToggle.focus();
+			}
+		});
+
+		/* Choosing a link closes its panel (and the sheet on mobile). */
+		nav.querySelectorAll('a').forEach((link) =>
+			link.addEventListener('click', () => {
+				closeAllToggles();
+				if (mobileToggle && mobileSheet) {
+					mobileToggle.setAttribute('aria-expanded', 'false');
+					mobileSheet.setAttribute('aria-hidden', 'true');
+				}
+			})
+		);
+	})();
+</script>

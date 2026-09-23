@@ -3,64 +3,10 @@ import { Image } from 'astro:assets';
 import ArchiveHeader from './ArchiveHeader.astro';
 import LoreCard from './LoreCard.astro';
 import institutionsBanner from '../assets/banners/institutions.jpg';
-
-// Institutions per Fablea_tidied.md. Featured cards span two columns (R-14:
-// hierarchy signal, not uniform grid).
-const institutions = [
-	{
-		id: 'I-01',
-		title: 'Income Makers',
-		excerpt:
-			'Massive entertainment and tourism conglomerate. HQ north of Northport, with a large superyacht marina. Owned and led by Anna Nishikinomiya.',
-		status: 'active',
-		statusLabel: 'Institution',
-		featured: true
-	},
-	{
-		id: 'I-02',
-		title: 'Azure Navy',
-		excerpt:
-			'Military force of Azure Land. Reformed by Scathach-Skadi to include non-shipgirl soldiers. Advanced tech and crews. More marines than navy.',
-		status: 'active',
-		statusLabel: 'Military',
-		featured: true
-	},
-	{
-		id: 'I-03',
-		title: 'Azure People Army',
-		excerpt:
-			'Secondary military force composed solely of Fablea-native residents. Rigid, parallel to Earthian military doctrine.',
-		status: 'active',
-		statusLabel: 'Military'
-	},
-	{
-		id: 'I-04',
-		title: 'K-Cruises',
-		excerpt:
-			'Budget yacht chartering and cruise rival to Income Makers. Owned by Karen of Spy x Family. Specializes in budget to luxury cruise tiers.',
-		status: 'active',
-		statusLabel: 'Institution'
-	},
-	{
-		id: 'I-05',
-		title: 'Teruhashi Conglomerate',
-			excerpt:
-			'Afrea-based empire spanning private education, entertainment media, and mining. Promotes the Afrea Yacht Show, the largest in Fablea.',
-		status: 'active',
-		statusLabel: 'Institution'
-	},
-	{
-		id: 'I-06',
-		title: 'Omi Alliance',
-		excerpt:
-			'Lawful-evil organization that rules eastern Taihei. Led by Jin Goda. Maintains good relations with Mankai-no-Wa and Prime Minister Hironaka.',
-		status: 'restricted',
-		statusLabel: 'Alliance'
-	}
-];
+import { institutions, slugify } from '../data/lore';
 ---
 
-<section class="border-b border-border-subtle">
+<section id="powers" class="border-b border-border-subtle">
 	<div class="container-archival py-14 md:py-20">
 		<ArchiveHeader
 			archiveId="005"
@@ -77,16 +23,17 @@ const institutions = [
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 			{
 				institutions.map((item) => (
-					<LoreCard
-						class:list={[item.featured ? 'sm:col-span-2' : '']}
-						id={item.id}
-						category="Institution"
-						title={item.title}
-						excerpt={item.excerpt}
-						status={item.status}
-						statusLabel={item.statusLabel}
-						comingSoon
-					/>
+						<LoreCard
+							class:list={[item.featured ? 'sm:col-span-2' : '']}
+							id={item.id}
+							category="Institution"
+							title={item.title}
+							excerpt={item.excerpt}
+							status={item.status}
+							statusLabel={item.statusLabel}
+							comingSoon
+							anchor={`powers-${slugify(item.title)}`}
+						/>
 				))
 			}
 		</div>

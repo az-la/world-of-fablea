@@ -51,6 +51,33 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* Anchored cards/sections land below the fixed floating nav, which sits
+     with a ~4px inset and a ~44px bar. */
+  [id] {
+    scroll-margin-top: 5rem;
+  }
+
+  /* Skip link: off-screen until focused. */
+  .skip-link {
+    position: fixed;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 100;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-arch);
+    transform: translateY(-200%);
+  }
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+
   /* Visible focus ring for keyboard users (R-32) */
   :focus-visible {
     outline: 2px solid var(--color-accent-azure);
@@ -64,5 +91,25 @@
     margin-inline: auto;
     max-width: var(--container-archival);
     padding-inline: 1.5rem;
+  }
+
+  /* Site-wide faint scanlines: static CRT texture at ~1.0% slate, sanctioned
+     by DESIGN.md §6.5 (scanline overlay motif). Fixed at z-30, below the
+     navbar (z-50), above content; invisible when printing. */
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(148, 163, 184, 0.010) 0 1px,
+      transparent 2px 4px
+    );
+  }
+  @media print {
+    .scanlines {
+      display: none;
+    }
   }
 }

@@ -7,12 +7,14 @@ interface Props {
 	description: string;
 	note?: string;
 	accessLabel: string;
+	/** Card anchor used by navbar dropdowns. */
+	anchor?: string;
 }
 
-const { fileId, title, description, note, accessLabel } = Astro.props;
+const { fileId, title, description, note, accessLabel, anchor } = Astro.props;
 ---
 
-<article class="relative flex flex-col gap-4 border border-dashed border-accent-restricted bg-accent-restricted/5 p-6">
+<article id={anchor} class="relative flex flex-col gap-4 border border-dashed border-accent-restricted bg-accent-restricted/5 p-6">
 	<div class="flex items-center justify-between gap-2">
 		<span class="font-mono text-[0.65rem] tracking-[0.1em] text-accent-restricted uppercase">
 			File / {fileId}
