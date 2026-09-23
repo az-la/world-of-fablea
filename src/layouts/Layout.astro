@@ -3,15 +3,17 @@ import '../styles/global.css';
 import LoadingOverlay from '../components/LoadingOverlay.astro';
 import FloatingNav from '../components/FloatingNav.astro';
 
-interface Props {
-	title?: string;
-	description?: string;
-}
-
 const {
 	title = 'World of Fablea',
 	description = 'An archival database of the summoned realm.'
 } = Astro.props;
+
+// DEV-only load floor (see DESIGN.md §7): the 800ms minimum keeps the
+// "Decrypting Archive..." overlay visible long enough to watch the
+// staggered entrance while working locally. The flag is evaluated at
+// build time, so production HTML ships the no-floor variant and the
+// fade cascade starts the moment window.load fires.
+const isDev = import.meta.env.DEV;
 ---
 
 <!doctype html>
@@ -27,34 +29,41 @@ const {
 		<title>{title}</title>
 		<!-- Three-tier font system per DESIGN.md §3:
 		     display (serif) for grand lore titles, sans for body/UI,
-		     mono for archival metadata. -->
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap"
-			rel="stylesheet"
-		/>
+		     mono for archival metadata. Self-hosted via @fontsource
+		     (variable Inter/JetBrains Mono + static Playfair Display)
+		     — see the @import block at the top of global.css. -->
 	</head>
 	<body>
 		<LoadingOverlay />
-		<script is:raw>
-			// Set data-loaded on <html> so CSS transitions can run.
-			// Minimum 800ms display ensures the loading overlay is visible even
-			// on local/fast loads; on deployed sites, actual resource load time
-			// typically exceeds this, so it acts as a floor, not a cap.
-			(function() {
-				var setLoaded = function() {
-					document.documentElement.setAttribute('data-loaded', 'true');
-				};
-				if (document.readyState === 'complete') {
-					setTimeout(setLoaded, 800);
-				} else {
-					window.addEventListener('load', function() {
-						setTimeout(setLoaded, 800);
-					});
-				}
-			})();
-		</script>
+		{
+			isDev ? (
+				<script is:raw>
+					// DEV: hold the overlay up to 800ms after window.load so the
+					// staggered entrance stays visible while working locally.
+					(function() {
+						var setLoaded = function() {
+							setTimeout(function() {
+								document.documentElement.setAttribute('data-loaded', 'true');
+							}, 800);
+						};
+						if (document.readyState === 'complete') setLoaded();
+						else window.addEventListener('load', setLoaded);
+					})();
+				</script>
+			) : (
+				<script is:raw>
+					// PROD: set data-loaded on <html> the moment window.load
+					// fires, so the fade cascade starts immediately.
+					(function() {
+						var setLoaded = function() {
+							document.documentElement.setAttribute('data-loaded', 'true');
+						};
+						if (document.readyState === 'complete') setLoaded();
+						else window.addEventListener('load', setLoaded);
+					})();
+				</script>
+			)
+		}
 		<a href="#main" class="skip-link">Skip to content</a>
 		<FloatingNav />
 		<main id="main">

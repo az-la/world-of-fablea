@@ -1,3 +1,11 @@
+/* Self-hosted fonts (replaces the Google Fonts CDN links):
+   variable Inter + JetBrains Mono cover all weight classes in use
+   (400/500/600); Playfair Display is fixed at 400. Only the latin
+   subsets are referenced. */
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+@import "@fontsource/playfair-display/latin-400.css";
+
 @import "tailwindcss";
 
 /* ============================================================
@@ -27,10 +35,13 @@
   /* Lines */
   --color-border-subtle: #334155;
 
-  /* Typography: three tiers per DESIGN.md */
+  /* Typography: three tiers per DESIGN.md. Variable font families
+     self-hosted via @fontsource (see @import block at top); the static
+     family names stay as fallbacks for browsers without variable font
+     support. */
   --font-display: "Playfair Display", "Lora", Georgia, serif;
-  --font-sans: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  --font-sans: "Inter Variable", "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
 
   /* Layout */
   --container-archival: 1200px;
