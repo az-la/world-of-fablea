@@ -26,34 +26,36 @@ const brandHref = `${Astro.baseUrl}/`;
 				<div class="hidden items-center gap-2 lg:flex" role="menubar" aria-label="Sections">
 					{
 						navGroups.map((group) => (
-							<div class="relative">
-								<div class="flex items-center gap-1">
-									<a
-										href={group.href}
-										role="menuitem"
-										class="nav-link px-2.5 py-2 font-mono text-xs tracking-[0.1em] uppercase"
-									>
-										{group.label}
-									</a>
-									<button
-										type="button"
-										class="nav-toggle flex items-center px-1 py-2 font-mono text-[0.9rem] leading-none"
-										aria-expanded="false"
-										aria-controls={`panel-${group.key}`}
-										aria-label={`Show ${group.label} list`}
-									>
-										<span aria-hidden="true">▾</span>
-									</button>
-								</div>
-								<div
-									id={`panel-${group.key}`}
-									role="menu"
-									aria-label={group.sectionTitle}
-									class:list={[
-										'nav-panel absolute left-0 top-full z-10 pt-2',
-										group.key === 'earthians' ? 'nav-panel-scroll' : 'nav-panel-min'
-									]}
-								>
+					<div
+						class="nav-group relative"
+						id={`panel-anchor-${group.key}`}
+						role="group"
+						aria-label={group.sectionTitle}
+					>
+						<div class="flex items-center gap-1">
+							<a
+								href={group.href}
+								class="nav-link px-2.5 py-2 font-mono text-xs tracking-[0.1em] uppercase"
+							>
+								{group.label}
+							</a>
+							<button
+								type="button"
+								class="nav-toggle flex items-center px-1 py-2 font-mono text-[0.9rem] leading-none"
+								aria-expanded="false"
+								aria-controls={`panel-${group.key}`}
+								aria-label={`Show ${group.label} list`}
+							>
+								<span aria-hidden="true">▾</span>
+							</button>
+						</div>
+						<div
+							id={`panel-${group.key}`}
+							class:list={[
+								'nav-panel absolute left-0 top-full z-10 pt-2',
+								group.key === 'earthians' ? 'nav-panel-scroll' : 'nav-panel-min'
+							]}
+						>
 									<div class="mb-1 border-b border-border-subtle pb-1 font-mono text-[0.65rem] tracking-[0.15em] text-text-muted uppercase">
 										{group.sectionTitle}
 									</div>
@@ -61,7 +63,6 @@ const brandHref = `${Astro.baseUrl}/`;
 										group.items.map((item) => (
 											<a
 												href={item.anchor}
-												role="menuitem"
 												class="nav-panel-link block px-3 py-1.5 font-mono text-xs tracking-[0.05em]"
 											>
 												{item.label}
@@ -213,6 +214,16 @@ const brandHref = `${Astro.baseUrl}/`;
 		width: 16rem;
 		padding: 0.5rem;
 	}
+	/* The ::before sits behind the text, so the panel needs to clear the
+	   rounded-arch padding on both sides when it hangs from the group. */
+	.nav-panel {
+		margin-inline: -1rem;
+	}
+	@media (min-width: 640px) {
+		.nav-panel {
+			margin-inline: -1.25rem;
+		}
+	}
 	.nav-panel-min {
 		min-width: 12rem;
 		padding: 0.5rem;
@@ -271,17 +282,42 @@ const brandHref = `${Astro.baseUrl}/`;
 			panelOf(button)?.setAttribute('aria-hidden', 'false');
 		};
 
-		/* Desktop: one open dropdown per menubar; the mobile sheet is separate. */
+		/* Desktop dropdowns open on hover (or keyboard focus) of the group's
+		   base link + chevron, and close when the pointer leaves. */
 		nav
-			.querySelectorAll('[role="menubar"] .nav-toggle')
+			.querySelectorAll<HTMLElement>('[role="menubar"] .nav-group')
+			.forEach((group) => {
+				const button = group.querySelector<HTMLElement>('.nav-toggle');
+				group.addEventListener('mouseenter', () => {
+					nav
+						.querySelectorAll<HTMLElement>(
+							'[role="menubar"] .nav-toggle[aria-expanded="true"]'
+						)
+						.forEach((other) => closeToggle(other));
+					openToggle(button);
+				});
+				group.addEventListener('mouseleave', () => {
+					// a sibling group's mouseenter may already have re-opened it
+					if (button.getAttribute('aria-expanded') !== 'true') return;
+					closeToggle(button);
+				});
+				group.addEventListener('focusin', () => {
+					nav
+						.querySelectorAll<HTMLElement>(
+							'[role="menubar"] .nav-toggle[aria-expanded="true"]'
+						)
+						.forEach((other) => closeToggle(other));
+					openToggle(button);
+				});
+			});
+		nav
+			.querySelectorAll<HTMLElement>('[role="menubar"] .nav-toggle')
 			.forEach((btn) =>
 				btn.addEventListener('click', () => {
-					const button = btn as HTMLElement;
+					const button = btn;
 					const wasOpen = button.getAttribute('aria-expanded') === 'true';
-					nav
-						.querySelectorAll('[role="menubar"] .nav-toggle[aria-expanded="true"]')
-						.forEach((other) => closeToggle(other as HTMLElement));
 					if (!wasOpen) openToggle(button);
+					else closeToggle(button);
 				})
 			);
 
