@@ -13,6 +13,146 @@ export interface Region {
 	body?: string;
 }
 
+// Per-section background images for region detail pages (Vesper-City style).
+// Local files served from /regions/ in the public/ folder; replace the
+// woa-r*-*.jpg placeholders with real art when ready.
+// URL per (region id, section key); section keys match the ## headings in body.
+// BASE_URL ships with a trailing slash, so a plain relative prefix is safe.
+export const regionSectionImages: Record<string, Record<string, string>> = {
+	'R-01': {
+		Overview: 'regions/woa-r01-overview.jpg',
+		'Geography & Location': 'regions/woa-r01-geography.jpg',
+		'Polities & Governance': 'regions/woa-r01-governance.jpg',
+		'Economy & Currency': 'regions/woa-r01-economy.jpg',
+		'Major Sites': 'regions/woa-r01-sites.jpg',
+		'People & Notable Residents': 'regions/woa-r01-people.jpg',
+		'Institutions & Organizations': 'regions/woa-r01-institutions.jpg',
+		'Restrictions & Access': 'regions/woa-r01-access.jpg'
+	},
+	'R-02': {
+		Overview: 'regions/woa-r02-overview.jpg',
+		'Geography & Location': 'regions/woa-r02-geography.jpg',
+		'Polities & Governance': 'regions/woa-r02-governance.jpg',
+		'Economy & Currency': 'regions/woa-r02-economy.jpg',
+		'Major Sites': 'regions/woa-r02-sites.jpg',
+		'People & Notable Residents': 'regions/woa-r02-people.jpg',
+		'Institutions & Organizations': 'regions/woa-r02-institutions.jpg',
+		'Restrictions & Access': 'regions/woa-r02-access.jpg'
+	},
+	'R-03': {
+		Overview: 'regions/woa-r03-overview.jpg',
+		'Geography & Location': 'regions/woa-r03-geography.jpg',
+		'Polities & Governance': 'regions/woa-r03-governance.jpg',
+		'Economy & Currency': 'regions/woa-r03-economy.jpg',
+		'Major Sites': 'regions/woa-r03-sites.jpg',
+		'People & Notable Residents': 'regions/woa-r03-people.jpg',
+		'Institutions & Organizations': 'regions/woa-r03-institutions.jpg',
+		'Restrictions & Access': 'regions/woa-r03-access.jpg'
+	},
+	'R-04': {
+		Overview: 'regions/woa-r04-overview.jpg',
+		'Geography & Location': 'regions/woa-r04-geography.jpg',
+		'Polities & Governance': 'regions/woa-r04-governance.jpg',
+		'Economy & Currency': 'regions/woa-r04-economy.jpg',
+		'Major Sites': 'regions/woa-r04-sites.jpg',
+		'People & Notable Residents': 'regions/woa-r04-people.jpg',
+		'Institutions & Organizations': 'regions/woa-r04-institutions.jpg',
+		'Restrictions & Access': 'regions/woa-r04-access.jpg'
+	},
+	'R-05': {
+		Overview: 'regions/woa-r05-overview.jpg',
+		'Geography & Location': 'regions/woa-r05-geography.jpg',
+		'Polities & Governance': 'regions/woa-r05-governance.jpg',
+		'Economy & Currency': 'regions/woa-r05-economy.jpg',
+		'Major Sites': 'regions/woa-r05-sites.jpg',
+		'People & Notable Residents': 'regions/woa-r05-people.jpg',
+		'Institutions & Organizations': 'regions/woa-r05-institutions.jpg',
+		'Restrictions & Access': 'regions/woa-r05-access.jpg'
+	},
+	'R-06': {
+		Overview: 'regions/woa-r06-overview.jpg',
+		'Geography & Location': 'regions/woa-r06-geography.jpg',
+		'Polities & Governance': 'regions/woa-r06-governance.jpg',
+		'Economy & Currency': 'regions/woa-r06-economy.jpg',
+		'Major Sites': 'regions/woa-r06-sites.jpg',
+		'People & Notable Residents': 'regions/woa-r06-people.jpg',
+		'Institutions & Organizations': 'regions/woa-r06-institutions.jpg',
+		'Restrictions & Access': 'regions/woa-r06-access.jpg'
+	},
+	'R-07': {
+		Overview: 'regions/woa-r07-overview.jpg',
+		'Geography & Location': 'regions/woa-r07-geography.jpg',
+		'Polities & Governance': 'regions/woa-r07-governance.jpg',
+		'Economy & Currency': 'regions/woa-r07-economy.jpg',
+		'Major Sites': 'regions/woa-r07-sites.jpg',
+		'People & Notable Residents': 'regions/woa-r07-people.jpg',
+		'Institutions & Organizations': 'regions/woa-r07-institutions.jpg',
+		'Restrictions & Access': 'regions/woa-r07-access.jpg'
+	},
+	'R-08': {
+		Overview: 'regions/woa-r08-overview.jpg',
+		'Geography & Location': 'regions/woa-r08-geography.jpg',
+		'Polities & Governance': 'regions/woa-r08-governance.jpg',
+		'Economy & Currency': 'regions/woa-r08-economy.jpg',
+		'Major Sites': 'regions/woa-r08-sites.jpg',
+		'People & Notable Residents': 'regions/woa-r08-people.jpg',
+		'Institutions & Organizations': 'regions/woa-r08-institutions.jpg',
+		'Restrictions & Access': 'regions/woa-r08-access.jpg'
+	},
+	'R-09': {
+		Overview: 'regions/woa-r09-overview.jpg',
+		'Geography & Location': 'regions/woa-r09-geography.jpg',
+		'Polities & Governance': 'regions/woa-r09-governance.jpg',
+		'Economy & Currency': 'regions/woa-r09-economy.jpg',
+		'Major Sites': 'regions/woa-r09-sites.jpg',
+		'People & Notable Residents': 'regions/woa-r09-people.jpg',
+		'Institutions & Organizations': 'regions/woa-r09-institutions.jpg',
+		'Restrictions & Access': 'regions/woa-r09-access.jpg'
+	},
+	'R-10': {
+		Overview: 'regions/woa-r10-overview.jpg',
+		'Geography & Location': 'regions/woa-r10-geography.jpg',
+		'Polities & Governance': 'regions/woa-r10-governance.jpg',
+		'Economy & Currency': 'regions/woa-r10-economy.jpg',
+		'Major Sites': 'regions/woa-r10-sites.jpg',
+		'People & Notable Residents': 'regions/woa-r10-people.jpg',
+		'Institutions & Organizations': 'regions/woa-r10-institutions.jpg',
+		'Restrictions & Access': 'regions/woa-r10-access.jpg'
+	},
+	'R-11': {
+		Overview: 'regions/woa-r11-overview.jpg',
+		'Geography & Location': 'regions/woa-r11-geography.jpg',
+		'Polities & Governance': 'regions/woa-r11-governance.jpg',
+		'Economy & Currency': 'regions/woa-r11-economy.jpg',
+		'Major Sites': 'regions/woa-r11-sites.jpg',
+		'People & Notable Residents': 'regions/woa-r11-people.jpg',
+		'Institutions & Organizations': 'regions/woa-r11-institutions.jpg',
+		'Restrictions & Access': 'regions/woa-r11-access.jpg'
+	},
+	'R-12': {
+		Overview: 'regions/woa-r12-overview.jpg',
+		'Geography & Location': 'regions/woa-r12-geography.jpg',
+		'Polities & Governance': 'regions/woa-r12-governance.jpg',
+		'Economy & Currency': 'regions/woa-r12-economy.jpg',
+		'Major Sites': 'regions/woa-r12-sites.jpg',
+		'People & Notable Residents': 'regions/woa-r12-people.jpg',
+		'Institutions & Organizations': 'regions/woa-r12-institutions.jpg',
+		'Restrictions & Access': 'regions/woa-r12-access.jpg'
+	}
+};
+
+/**
+ * Per-section background URL for a region, falling back to the region's
+ * hero image when no section-specific image is filed. Paths are relative
+ * to the site base; the page composes them with import.meta.env.BASE_URL.
+ */
+export function regionImage(regionId: string, sectionKey?: string): string | undefined {
+	if (sectionKey && regionSectionImages[regionId]?.[sectionKey]) {
+		return regionSectionImages[regionId][sectionKey];
+	}
+	return regionSectionImages[regionId]?.Overview;
+}
+
 export interface Earthian {
 	no: string;
 	name: string;

@@ -104,7 +104,7 @@
     padding-inline: 1.5rem;
   }
 
-  /* Site-wide faint scanlines: static CRT texture at ~1.0% slate, sanctioned
+  /* Site-wide faint scanlines: static CRT texture at ~0.5% slate, sanctioned
      by DESIGN.md §6.5 (scanline overlay motif). Fixed at z-30, below the
      navbar (z-50), above content; invisible when printing. */
   .scanlines {
@@ -114,7 +114,7 @@
     pointer-events: none;
     background-image: repeating-linear-gradient(
       to bottom,
-      rgba(148, 163, 184, 0.010) 0 1px,
+      rgba(148, 163, 184, 0.005) 0 1px,
       transparent 2px 4px
     );
   }

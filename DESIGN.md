@@ -13,6 +13,10 @@
 2. **Functional Mystery**: Reveal information progressively. Use "Restricted" or "Archive Pending" states to create intrigue without breaking usability.
 3. **Maritime Minimalism**: Avoid heavy, clunky UI. Favor clean lines, subtle nautical motifs (e.g., faint grid lines, compass-like dividers), and a sense of open space.
 4. **Data as Decoration**: Metadata (e.g., `ARCHIVE 001`, `STATUS: ACTIVE`, `CURRENCY: AZL`) should be styled prominently using monospaced fonts, acting as both information and visual texture.
+5. **Silent Performance**: Nothing on this site should feel "slow to load." Aesthetic motifs (entrance cascades, decoding overlays, hero backdrops) must never add seconds to perceived load. Three concrete rules:
+   - **No production load floors.** Entrance animations trigger as soon as resources are available; any minimum display delay is stripped at build time so dev-only polish never ships (see §7).
+   - **Self-hosted, subsetted fonts.** Fonts are bundled as woff2 via `@fontsource`; no third-party font CDNs on the critical path (see §3).
+   - **Images sized to their job.** Every image is delivered at its display width and the lowest quality that survives visually — a hero backdrop rendered at 40% opacity is not a full-resolution asset (see §8).
 
 ---
 
@@ -30,6 +34,8 @@ A three-tier font system ensures hierarchy between grand lore, readable body tex
 - Line height (Body): `1.6`
 - Line height (Headings): `1.2`
 - Letter spacing (Metadata): `0.05em` (uppercase)
+
+**Delivery** (per §2.5): Fonts are self-hosted via `@fontsource` packages — no Google Fonts or other third-party CDNs. Variable fonts cover all weights; only the latin subset is bundled. The `--font-*` stacks in `global.css` list the variable family name first, with the static family as fallback.
 
 ---
 
@@ -125,7 +131,7 @@ A special component for deep lore hooks (e.g., The Ascender, Seapoint Estate).
 
 ## 7. Micro-interactions & Animations
 Keep animations subtle and purposeful. No bouncy or playful easing.
-- **Page Load**: Staggered fade-in + slight upward translate (`opacity: 0` → `1`, `translateY: 10px` → `0`, `duration: 0.4s`, `ease: cubic-bezier(0.16, 1, 0.3, 1)`).
+- **Page Load**: Staggered fade-in + slight upward translate (`opacity: 0` → `1`, `translateY: 10px` → `0`, `duration: 0.4s`, `ease: cubic-bezier(0.16, 1, 0.3, 1)`). In dev, the "Decrypting Archive..." overlay holds for a minimum of `800ms` so the entrance is watchable; **production strips the floor at build time** — `data-loaded` is set the moment `window.load` fires, so the cascade never delays real visitors.
 - **Link Hover**: Underline expands from left to right (`width: 0` → `100%`).
 - **Card Hover**: Border color transitions to `--accent-azure` or `--accent-gold` over `0.2s`.
 - **Loading States**: Use a pulsing monospace text effect: `"Decrypting Archive..."` or `"Synchronizing with Azure Network..."`
@@ -136,6 +142,11 @@ Keep animations subtle and purposeful. No bouncy or playful easing.
 - **Icons**: Use a minimalist, stroke-based icon set (e.g., Lucide React, Heroicons, or Phosphor Icons). Stroke width: `1.5px`.
 - **Dividers**: Instead of standard `<hr>`, use stylized dividers (e.g., a thin line with a small diamond or compass rose icon in the center).
 - **Backgrounds**: Avoid solid, flat colors for large sections. Use subtle CSS radial gradients or a very faint SVG grid pattern (opacity: `0.03`) to add depth without distraction.
+
+**Image Budgets** (per §2.5):
+- **Hero backdrop**: `widths: [640, 1280]`, quality `80`. The largest image on the page; cap it at 1280w even though the source is 2560w — it renders behind text at reduced opacity.
+- **Section banners** (regions, earthians, institutions): `widths: [640, 960]`, quality `65`. They display at `h-40 md:h-56`; anything beyond 960w is invisible detail.
+- Rule of thumb: every image is sized and quality-set for its **display context**, not its source dimensions. New banners and heroes get the same treatment.
 
 ---
 

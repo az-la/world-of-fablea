@@ -1,8 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import ArchiveHeader from '../../components/ArchiveHeader.astro';
 import StatusBadge from '../../components/StatusBadge.astro';
-import { regions, slugify } from '../../data/lore';
+import { regions, slugify, regionImage } from '../../data/lore';
 
 export function getStaticPaths() {
 	return regions.map((region) => ({
@@ -17,8 +16,18 @@ interface Props {
 
 const { region } = Astro.props;
 
+// The site <base> tag makes fragment-only hrefs resolve to the base URL, so
+// same-page anchors must carry the full page path (see git history: base url
+// bug fixes). BASE_URL ships with a trailing slash.
+const pageUrl = `${import.meta.env.BASE_URL}regions/${slugify(region.title)}`;
+
+// Background images in public/regions/ are referenced relative to the site
+// base, not the page URL, for the same <base> reason.
+const bgUrl = (path: string | undefined) =>
+	path ? `${import.meta.env.BASE_URL}${path}` : undefined;
+
 // Parse the body into sections. Each ## heading is a beat.
-// We split on ## so we can render each section independently.
+// The first beat (Overview) becomes the hero; the rest are full-screen chapters.
 const bodySections = region.body
 	? region.body
 			.split(/\n(?=## )/)
@@ -33,6 +42,39 @@ const bodySections = region.body
 			.filter((s) => s.heading || s.content)
 	: [];
 
+const overview = bodySections[0] ?? { heading: '', content: '' };
+const chapters = bodySections
+	.slice(1)
+	.map((section, i) => ({
+		...section,
+		index: i + 2,
+		id: `sec-${String(i + 2).padStart(2, '0')}`,
+		// Alternate the text column left/right for chapter rhythm.
+		alignRight: i % 2 === 1,
+		image: regionImage(region.id, section.heading)
+	}));
+
+// Split a chapter body into renderable lines: paragraphs, dossier entries
+// ("- **Name**: description"), plain bullets, and NOT ON FILE markers.
+function parseLines(content: string) {
+	return content
+		.split('\n')
+		.map((line) => line.trim())
+		.filter(Boolean)
+		.map((line) => {
+			const entry = line.match(/^- \*\*(.+?)\*\*:?\s*(.*)$/);
+			if (entry) return { type: 'entry' as const, name: entry[1], text: entry[2] };
+			if (line.startsWith('- ')) return { type: 'bullet' as const, text: line.slice(2) };
+			if (line === 'NOT ON FILE') return { type: 'stamp' as const, text: line };
+			return { type: 'para' as const, text: line.replace(/\*\*/g, '') };
+		});
+}
+
+const overviewLines = overview.content
+	.split('\n')
+	.map((line) => line.trim())
+	.filter(Boolean);
+
 // Determine if this is a restricted region for the callout treatment.
 const isRestricted = region.status === 'restricted';
 const isPending = region.status === 'pending';
@@ -42,129 +84,194 @@ const isPending = region.status === 'pending';
 	title={`${region.title} — World of Fablea: Archival Database`}
 	description={`Dossier ${region.id}: ${region.excerpt}`}
 >
-	<div class="container-archival py-14 md:py-20">
-		<!-- Beat 1: ArchiveHeader -->
-		<ArchiveHeader
-			archiveId={region.id}
-			category="REGION"
-			title={region.title}
-		/>
-
-		<!-- Beat 2: StatusBadge flush above display title -->
-		<div class="-mt-6 mb-6">
-			<StatusBadge
-				label={region.statusLabel}
-				variant={region.status}
-			/>
+	<!-- Hero: full-screen, region title over the Overview image (Vesper-style opener) -->
+	<section
+		class="relative isolate flex min-h-svh items-end overflow-hidden md:items-center"
+		style={`background-color: var(--color-bg-secondary); background-image: url("${bgUrl(regionImage(region.id, overview.heading))}")`}
+		aria-label={`${region.title} overview`}
+	>
+		<div class="absolute inset-0 bg-bg-primary/90 md:bg-bg-primary/70" aria-hidden="true"></div>
+		<div
+			class="absolute inset-0 hidden bg-gradient-to-r from-bg-primary from-0% via-bg-primary/90 via-45% to-transparent md:block"
+			aria-hidden="true"
+		></div>
+		<div class="container-archival relative pb-16 pt-28 md:pb-20 md:pt-32">
+			<div class="max-w-3xl">
+				<div class="flex flex-wrap items-center justify-between gap-3">
+					<p class="font-mono text-xs tracking-[0.15em] text-slate-300 uppercase">
+						File / {region.id} / Region
+					</p>
+					<StatusBadge label={region.statusLabel} variant={region.status} />
+				</div>
+				<h1 class="mt-4 font-display text-5xl leading-[1.1] tracking-tight text-white md:text-7xl">
+					{region.title}
+				</h1>
+				{/* Overview body doubles as the hero intro; it is richer than the
+				    excerpt and the two nearly always restate each other. The excerpt
+				    remains in the meta description and on the homepage cards. */}
+				{overviewLines.length > 0 ? (
+					<div class="mt-6 max-w-2xl space-y-4">
+						{overviewLines.map((line) => (
+							<p class="text-base leading-relaxed text-slate-200 md:text-lg">
+								{line}
+							</p>
+						))}
+					</div>
+				) : (
+					<p class="mt-6 max-w-2xl text-base leading-relaxed text-slate-200 md:text-lg">
+						{region.excerpt}
+					</p>
+				)}
+				{region.marker && (
+					<p class="mt-10 font-mono text-xs tracking-[0.12em] text-slate-300 uppercase">
+						{region.marker}
+					</p>
+				)}
+			</div>
 		</div>
+	</section>
 
-		<!-- Beat 3: Lead blurb (the grid excerpt) -->
-		<p class="mb-6 max-w-3xl text-base leading-relaxed text-text-secondary">
-			{region.excerpt}
-		</p>
+	<!-- File index: numbered anchor strip, one real destination per chapter -->
+	{chapters.length > 0 && (
+		<nav class="border-y border-border-subtle bg-bg-primary" aria-label="File index">
+			<div class="container-archival py-10">
+				<p class="font-mono text-xs tracking-[0.15em] text-text-secondary uppercase">
+					File index / {chapters.length} sections
+				</p>
+				<ul class="mt-5 grid grid-cols-1 gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
+					{chapters.map((chapter) => (
+						<li>
+							<a
+								href={`${pageUrl}#${chapter.id}`}
+								class="link-hover-underline flex min-h-[44px] items-center gap-3 font-mono text-xs tracking-[0.1em] text-text-secondary uppercase transition-colors duration-200 hover:text-accent-gold"
+							>
+								<span class="text-text-muted">{String(chapter.index).padStart(2, '0')}</span>
+								{chapter.heading}
+							</a>
+						</li>
+					))}
+				</ul>
+			</div>
+		</nav>
+	)}
 
-		<!-- Beat 4: Marker line -->
-		{region.marker && (
-			<p class="mb-10 font-mono text-xs tracking-[0.1em] text-text-muted uppercase">
-				{region.marker}
-			</p>
-		)}
-
-		<!-- Beat 5: RegionDetail body -->
-		{bodySections.length > 0 ? (
-			<div class="region-detail space-y-10">
-				{
-					bodySections.map((section) => (
-						<section class="border-l-2 border-border-subtle pl-5">
-							<h2 class="mb-4 font-display text-2xl leading-snug text-text-primary">
-								{section.heading}
-							</h2>
-							<div class="prose-custom">
-								{section.content.split('\n').map((line) => {
-									const trimmed = line.trim();
-									if (!trimmed) return null;
-
-									// Bullet list items
-									if (trimmed.startsWith('- ')) {
+	<!-- Chapters: one full-screen background per section -->
+	<div>
+		{
+			chapters.map((chapter) => {
+				const lines = parseLines(chapter.content);
+				return (
+					<section
+						id={chapter.id}
+						class="relative isolate flex min-h-svh items-center overflow-hidden scroll-mt-24"
+					style={
+						chapter.image
+							? `background-color: var(--color-bg-secondary); background-image: url("${bgUrl(chapter.image)}")`
+							: 'background-color: var(--color-bg-secondary)'
+					}
+						aria-labelledby={`${chapter.id}-heading`}
+					>
+						<div class="absolute inset-0 bg-bg-primary/90 md:bg-bg-primary/70" aria-hidden="true"></div>
+						<div
+							class={`absolute inset-0 hidden from-bg-primary from-0% via-bg-primary/90 via-45% to-transparent md:block ${
+								chapter.alignRight ? 'bg-gradient-to-l' : 'bg-gradient-to-r'
+							}`}
+							aria-hidden="true"
+						></div>
+						<div class="container-archival relative py-24 md:py-32">
+							<div class={`max-w-2xl ${chapter.alignRight ? 'md:ml-auto' : ''}`}>
+								<p class="font-mono text-xs tracking-[0.15em] text-slate-300 uppercase">
+									File / {region.id} / Section {String(chapter.index).padStart(2, '0')}
+								</p>
+								<h2
+									id={`${chapter.id}-heading`}
+									class="mt-4 font-display text-3xl leading-tight text-white md:text-5xl"
+								>
+									{chapter.heading}
+								</h2>
+								<div class="chapter-prose mt-8">
+									{lines.map((line) => {
+										if (line.type === 'entry') {
+											return (
+												<div class="mt-6 border-t border-white/15 pt-4 first:mt-0 first:border-0 first:pt-0">
+													<h3 class="font-display text-xl leading-snug text-accent-gold">
+														{line.name}
+													</h3>
+													{line.text && (
+														<p class="mt-1 text-sm leading-relaxed text-slate-300 md:text-base">
+															{line.text}
+														</p>
+													)}
+												</div>
+											);
+										}
+										if (line.type === 'bullet') {
+											return (
+												<p class="ml-4 text-sm leading-relaxed text-slate-300 md:text-base">
+													{line.text}
+												</p>
+											);
+										}
+										if (line.type === 'stamp') {
+											return (
+												<p class="inline-block border border-dashed border-white/30 px-4 py-2 font-mono text-xs tracking-[0.15em] text-slate-300 uppercase">
+													NOT ON FILE
+												</p>
+											);
+										}
 										return (
-											<p class="ml-4 text-sm leading-relaxed text-text-secondary">
-												{trimmed.slice(2)}
+											<p class="text-sm leading-relaxed text-slate-200 md:text-base">
+												{line.text}
 											</p>
 										);
-									}
-
-									// Bold sub-headings (Major Sites entries, etc.)
-									if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
-										return (
-											<h3 class="mt-4 mb-2 font-display text-lg text-text-primary">
-												{trimmed.replace(/\*\*/g, '')}
-											</h3>
-										);
-									}
-
-									// NOT ON FILE marker
-									if (trimmed === 'NOT ON FILE') {
-										return (
-											<p class="font-mono text-xs tracking-[0.1em] text-text-muted uppercase">
-												NOT ON FILE
-											</p>
-										);
-									}
-
-									// Regular paragraph
-									return (
-										<p class="text-sm leading-relaxed text-text-secondary">
-											{trimmed}
-										</p>
-									);
-								})}
+									})}
+								</div>
 							</div>
-						</section>
-					))
-				}
-			</div>
-		) : (
-			// Empty body fallback
-			<p class="font-mono text-xs tracking-[0.1em] text-text-muted uppercase">
-				NOT ON FILE
-			</p>
-		)}
+						</div>
+					</section>
+				);
+			})
+		}
+	</div>
 
-		<!-- Beat 8: Restrictions callout for restricted regions -->
+	<!-- End matter on the solid archive background -->
+	<div class="bg-bg-primary">
 		{isRestricted && (
-			<div class="relative mt-10 flex flex-col gap-4 border border-dashed border-accent-restricted bg-accent-restricted/5 p-6">
-				<div class="flex items-center justify-between gap-2">
-					<span class="font-mono text-[0.65rem] tracking-[0.1em] text-accent-restricted uppercase">
-						File / {region.id}
-					</span>
-					<StatusBadge label="Access restricted" variant="restricted" />
+			<div class="container-archival pt-14">
+				<div class="relative flex flex-col gap-4 border border-dashed border-accent-restricted bg-accent-restricted/5 p-6">
+					<div class="flex items-center justify-between gap-2">
+						<span class="font-mono text-[0.65rem] tracking-[0.1em] text-accent-restricted uppercase">
+							File / {region.id}
+						</span>
+						<StatusBadge label="Access restricted" variant="restricted" />
+					</div>
+					<p class="text-sm leading-relaxed text-text-secondary">
+						The Crimson Wasteland is a no-man's-land. Artifacts spawn for limited time windows. Entry is not advised without proper authorization and preparation.
+					</p>
+					<p class="mt-auto font-mono text-xs tracking-[0.08em] text-text-muted uppercase">
+						Access: Restricted
+					</p>
 				</div>
-				<p class="text-sm leading-relaxed text-text-secondary">
-					The Crimson Wasteland is a no-man's-land. Artifacts spawn for limited time windows. Entry is not advised without proper authorization and preparation.
-				</p>
-				<p class="mt-auto font-mono text-xs tracking-[0.08em] text-text-muted uppercase">
-					Access: Restricted
-				</p>
 			</div>
 		)}
 
-		<!-- Pending notice for pending regions -->
 		{isPending && (
-			<div class="relative mt-10 flex flex-col gap-4 border border-dashed border-accent-gold bg-accent-gold/5 p-6">
-				<div class="flex items-center justify-between gap-2">
-					<span class="font-mono text-[0.65rem] tracking-[0.1em] text-accent-gold uppercase">
-						File / {region.id}
-					</span>
-					<StatusBadge label="Archive pending" variant="pending" />
+			<div class="container-archival pt-14">
+				<div class="relative flex flex-col gap-4 border border-dashed border-accent-gold bg-accent-gold/5 p-6">
+					<div class="flex items-center justify-between gap-2">
+						<span class="font-mono text-[0.65rem] tracking-[0.1em] text-accent-gold uppercase">
+							File / {region.id}
+						</span>
+						<StatusBadge label="Archive pending" variant="pending" />
+					</div>
+					<p class="text-sm leading-relaxed text-text-secondary">
+						This dossier is incomplete. Further information has not yet been filed. Check back for updates.
+					</p>
 				</div>
-				<p class="text-sm leading-relaxed text-text-secondary">
-					This dossier is incomplete. Further information has not yet been filed. Check back for updates.
-				</p>
 			</div>
 		)}
 
-		<!-- Beat 7: Back to Key Regions -->
-		<div class="mt-14 border-t border-border-subtle pt-6">
+		<div class="container-archival mt-14 pb-14">
 			<a
 				href={`./#regions`}
 				class="link-hover-underline font-mono text-xs tracking-[0.1em] text-accent-azure uppercase transition-colors duration-200 hover:text-accent-gold"
@@ -176,14 +283,9 @@ const isPending = region.status === 'pending';
 </Layout>
 
 <style is:global>
-	/* Prose styling for region detail body content */
-	.prose-custom p + p {
-		margin-top: 0.5rem;
-	}
-	.prose-custom h3 + p {
-		margin-top: 0.25rem;
-	}
-	.prose-custom p:first-child {
-		margin-top: 0;
+	/* Chapter body rhythm: every block after the first gets one beat of space;
+	   dossier entries override with their own wider mt-6. */
+	.chapter-prose > * + * {
+		margin-top: 1rem;
 	}
 </style>
