@@ -33,7 +33,15 @@ export function computeDiagramLayout(
 	relationships: Relationship[],
 	options: LayoutOptions = {}
 ): DiagramLayout {
-	const { width: W, height: H } = { ...DEFAULTS, ...options };
+	const base = { ...DEFAULTS, ...options };
+	// Growth headroom: every ~10 figures past the original 28 adds a lane to
+	// the box (and grows the fan radii below), so the chart scales with the
+	// roster instead of cramming. At 28 figures the box is exactly the
+	// original 1152 x 800.
+	const figureCount = characters.filter((c) => c.kind === 'figure').length;
+	const lanes = Math.ceil(Math.max(0, figureCount - 28) / 10);
+	const W = base.width + lanes * 160;
+	const H = base.height + lanes * 220;
 	const overrides = options.overrides ?? {};
 	const positions: Record<string, Point> = {};
 
@@ -104,9 +112,12 @@ export function computeDiagramLayout(
 		// their edge labels clear the crowded center.
 		const isHubFan = anchor === hub.id;
 		const step = Math.min(0.42, (n > 1 ? 2.1 : 0) / Math.max(n - 1, 1));
+		// Fan radii stretch only once the roster outgrows the original design,
+		// so today's chart is unchanged and bigger rosters get breathing room.
+		const fanScale = 1 + Math.max(0, figureCount - 28) / 50;
 		list.forEach((id, j) => {
 			const angle = outward + (j - (n - 1) / 2) * step;
-			const radius = (j % 2 === 1 ? 205 : 150) + (isHubFan ? 55 : 0);
+			const radius = ((j % 2 === 1 ? 205 : 150) + (isHubFan ? 55 : 0)) * fanScale;
 			positions[id] = {
 				x: base.x + radius * Math.cos(angle),
 				y: base.y + radius * Math.sin(angle)

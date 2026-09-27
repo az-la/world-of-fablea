@@ -143,3 +143,25 @@ Grouped by circle; sources are the same lines as the roster table:
 node id, e.g. `hmgfan.jpg`, `diane-cross.jpg`. Files are picked up at build
 time by `import.meta.glob`, rendered through `astro:assets` at 72/144px
 (quality 80). No file means the monogram placeholder renders.
+
+## Interactions (added when the chart became zoomable)
+
+- Pan/zoom replaced fit-only viewing because the roster will grow: wheel
+  zooms toward the cursor (0.3x-4x), drag the canvas to pan, pinch on touch,
+  and +/-/reset buttons sit on the frame's top-left. The chart still loads
+  fit-to-view; deep links and dossier chips pan the selected node to center.
+- Nodes are movable: drag a node (over 5px of travel; under that it is a
+  click) or nudge the selected node with arrow keys (Shift = 10-unit steps).
+  Edges redraw live; drags clamp inside the design box.
+- "Copy layout" exports every node that differs from the build default as
+  `layoutOverrides`-shaped JSON to the clipboard. Pasting it into
+  `layoutOverrides` in `src/data/characters.ts` makes the arrangement the
+  build-time default for all visitors; nothing is persisted client-side.
+- Layout growth: every ~10 figures past the original 28 adds a lane to the
+  design box (160 x 220 units) and stretches fan radii, so a bigger roster
+  spreads instead of cramming. At 28 figures the chart is byte-identical to
+  the original 1152 x 800 layout.
+- Sizing note: node sizes moved from container-query units to fixed design
+  px because the world layer (fixed px, one CSS transform) replaced the
+  percentage-scaled stage. The trade: opening the dossier now shrinks the
+  whole chart uniformly instead of floors keeping portraits at 48px.

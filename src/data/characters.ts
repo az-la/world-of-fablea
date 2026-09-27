@@ -289,6 +289,9 @@ for (const r of relationships) {
 /**
  * Fine-tuning hook for the chart: design-unit coordinates that override the
  * computed cluster layout for a single node, used when the automatic fan
- * placement needs a nudge. Coordinates live in a 1152 x 800 box.
+ * placement needs a nudge. Paste the JSON from the chart's "Copy layout"
+ * button here (drag nodes on /characters/, then copy) to make an arrangement
+ * the build-time default for every visitor. An empty object restores the pure
+ * computed layout.
  */
 export const layoutOverrides: Record<string, { x: number; y: number }> = {};

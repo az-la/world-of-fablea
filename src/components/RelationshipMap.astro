@@ -32,7 +32,8 @@ const monogramOf = (name: string) => {
 };
 
 // Dossier payloads for the client script, one entry per character with its
-// connections already resolved in both directions.
+// connections already resolved in both directions. extent + positions feed
+// the pan/zoom layer and the Copy layout export.
 interface Conn {
 	to: string;
 	label: string;
@@ -44,94 +45,118 @@ for (const r of relationships) {
 	connections[r.from]?.push({ to: r.to, label: r.label, kind: r.kind });
 	connections[r.to]?.push({ to: r.from, label: r.reverse ?? r.label, kind: r.kind });
 }
-const payload = JSON.stringify({ characters, connections }).replace(/</g, '\\u003c');
+const payload = JSON.stringify({
+	characters,
+	connections,
+	extent: { width, height },
+	positions
+}).replace(/</g, '\\u003c');
 
 const edges = relationships.map((r) => {
 	const a = positions[r.from];
 	const b = positions[r.to];
 	return { ...r, x1: a.x, y1: a.y, x2: b.x, y2: b.y };
 });
-
-const pct = (value: number, total: number) => `${((value / total) * 100).toFixed(3)}%`;
 ---
 
 <div id="relmap" class="relmap" data-state="empty">
-	<p class="relmap-status" role="status">
-		Awaiting selection: select a node on the chart to open its dossier. Escape closes it.
-	</p>
+		<p class="relmap-status" role="status">
+			Awaiting selection: select a node to open its dossier. Drag nodes to arrange them; scroll or
+			pinch to zoom.
+		</p>
 	<div class="relmap-frame">
 		<div class="relmap-scroll">
-			<div class="relmap-stage" role="group" aria-label="Character relationship chart" style={`aspect-ratio: ${width} / ${height};`}>
-				<svg class="relmap-edges" viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
+			<div
+				class="relmap-stage"
+				role="group"
+				aria-label="Character relationship chart. Scroll or pinch to zoom, drag the canvas to pan, drag a node to move it."
+				style={`aspect-ratio: ${width} / ${height};`}
+			>
+				<div class="relmap-world" style={`width: ${width}px; height: ${height}px;`}>
+					<svg class="relmap-edges" viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
+						{
+							edges.map((e, i) => (
+								<line
+									class="relmap-edge"
+									data-eidx={i}
+									data-kind={e.kind}
+									data-from={e.from}
+									data-to={e.to}
+									x1={e.x1}
+									y1={e.y1}
+									x2={e.x2}
+									y2={e.y2}
+									vector-effect="non-scaling-stroke"
+								/>
+							))
+						}
+						{
+							edges.map((e, i) => (
+								<line
+									class="relmap-edge-hit"
+									data-eidx={i}
+									data-kind={e.kind}
+									data-label={e.label}
+									x1={e.x1}
+									y1={e.y1}
+									x2={e.x2}
+									y2={e.y2}
+									vector-effect="non-scaling-stroke"
+								/>
+							))
+						}
+					</svg>
 					{
-						edges.map((e, i) => (
-							<line
-								class="relmap-edge"
-								data-eidx={i}
-								data-kind={e.kind}
-								data-from={e.from}
-								data-to={e.to}
-								x1={e.x1}
-								y1={e.y1}
-								x2={e.x2}
-								y2={e.y2}
-								vector-effect="non-scaling-stroke"
-							/>
-						))
+						characters.map((c) => {
+							const p = positions[c.id];
+							const portrait = portraitFor(c.id);
+							return (
+								<button
+									type="button"
+									id={`char-${c.id}`}
+									class:list={['relmap-node', c.kind === 'earthian' ? 'is-earthian' : 'is-figure']}
+									data-id={c.id}
+									aria-pressed="false"
+									style={`left: ${p.x}px; top: ${p.y}px;`}
+								>
+									<span class="relmap-portrait" aria-hidden="true">
+										{portrait ? (
+											<Image
+												src={portrait}
+												alt=""
+												widths={[72, 144]}
+												sizes="62px"
+												quality={80}
+												loading="lazy"
+												decoding="async"
+												class="relmap-photo"
+											/>
+										) : (
+											<span class="relmap-monogram">{monogramOf(c.name)}</span>
+										)}
+										{c.kind === 'earthian' && c.no && <span class="relmap-no">{c.no}</span>}
+									</span>
+									<span class="relmap-name">{c.name}</span>
+								</button>
+							);
+						})
 					}
-					{
-						edges.map((e, i) => (
-							<line
-								class="relmap-edge-hit"
-								data-eidx={i}
-								data-kind={e.kind}
-								data-label={e.label}
-								x1={e.x1}
-								y1={e.y1}
-								x2={e.x2}
-								y2={e.y2}
-								vector-effect="non-scaling-stroke"
-							/>
-						))
-					}
-				</svg>
-				{
-					characters.map((c) => {
-						const p = positions[c.id];
-						const portrait = portraitFor(c.id);
-						return (
-							<button
-								type="button"
-								id={`char-${c.id}`}
-								class:list={['relmap-node', c.kind === 'earthian' ? 'is-earthian' : 'is-figure']}
-								data-id={c.id}
-								aria-pressed="false"
-								style={`left: ${pct(p.x, width)}; top: ${pct(p.y, height)};`}
-							>
-								<span class="relmap-portrait" aria-hidden="true">
-									{portrait ? (
-										<Image
-											src={portrait}
-											alt=""
-											widths={[72, 144]}
-											sizes="(min-width: 1024px) 64px, 48px"
-											quality={80}
-											loading="lazy"
-											decoding="async"
-											class="relmap-photo"
-										/>
-									) : (
-										<span class="relmap-monogram">{monogramOf(c.name)}</span>
-									)}
-									{c.kind === 'earthian' && c.no && <span class="relmap-no">{c.no}</span>}
-								</span>
-								<span class="relmap-name">{c.name}</span>
-							</button>
-						);
-					})
-				}
+				</div>
 				<span class="relmap-tip" aria-hidden="true"></span>
 			</div>
+		</div>
+
+		<div class="relmap-controls" role="group" aria-label="Chart view controls">
+			<button type="button" class="relmap-ctrl" data-act="zoom-in" aria-label="Zoom in">+</button>
+			<button type="button" class="relmap-ctrl" data-act="zoom-out" aria-label="Zoom out">
+				&minus;
+			</button>
+			<button type="button" class="relmap-ctrl" data-act="reset" aria-label="Reset view">
+				&#x2922;
+			</button>
+			<button type="button" class="relmap-ctrl is-text" data-act="copy">
+				Copy layout
+			</button>
 		</div>
 
 		<aside class="relmap-panel" aria-label="Character dossier">
@@ -198,13 +223,22 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 		const data = JSON.parse(dataEl.textContent) as {
 			characters: Char[];
 			connections: Record<string, Conn[]>;
+			extent: { width: number; height: number };
+			positions: Record<string, { x: number; y: number }>;
 		};
 		const byId = new Map(data.characters.map((c) => [c.id, c] as const));
 		const adjacent = new Map<string, Set<string>>(
 			data.characters.map((c) => [c.id, new Set((data.connections[c.id] ?? []).map((k) => k.to))])
 		);
+		const extent = data.extent;
+		// Live node positions in design units; data.positions stays as the
+		// build-time default the Copy layout export diffs against.
+		const defaultPos = data.positions;
+		const pos: Record<string, { x: number; y: number }> = {};
+		for (const [id, p] of Object.entries(defaultPos)) pos[id] = { ...p };
 
 		const stage = root.querySelector<HTMLElement>('.relmap-stage');
+		const world = root.querySelector<HTMLElement>('.relmap-world');
 		const nodes = Array.from(root.querySelectorAll<HTMLElement>('.relmap-node'));
 		const edges = Array.from(root.querySelectorAll<SVGElement>('.relmap-edge'));
 		const hitLines = Array.from(root.querySelectorAll<SVGElement>('.relmap-edge-hit'));
@@ -219,7 +253,7 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 		const excerptEl = panel?.querySelector<HTMLElement>('.relmap-panel-excerpt');
 		const connCountEl = panel?.querySelector<HTMLElement>('.relmap-panel-conncount');
 		const connListEl = panel?.querySelector<HTMLElement>('.relmap-panel-conns');
-		if (!stage || !panel || !body || !connListEl || !tip) return;
+		if (!stage || !world || !panel || !body || !connListEl || !tip) return;
 		const statusIdle = statusEl?.textContent ?? '';
 
 		const chipKindClass: Record<string, string> = {
@@ -230,6 +264,219 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 
 		let selectedId: string | null = null;
 		let lastTrigger: HTMLElement | null = null;
+
+		// --- Pan & zoom ------------------------------------------------------
+		// The world layer is the whole chart at fixed design px; one transform
+		// pans and zooms it. World px equal design units, so screen deltas
+		// divided by scale land directly in coordinate space. fitView is the
+		// load state on desktop and the reset target everywhere.
+		const MIN_ZOOM = 0.3;
+		const MAX_ZOOM = 4;
+		let scale = 1;
+		let tx = 0;
+		let ty = 0;
+		let userZoomed = false;
+
+		const applyView = () => {
+			// Keep the world covering the stage; it can never be panned fully
+			// out of view.
+			const ww = extent.width * scale;
+			const wh = extent.height * scale;
+			const sw = stage.clientWidth;
+			const sh = stage.clientHeight;
+			tx = Math.min(Math.max(tx, Math.min(0, sw - ww)), Math.max(0, sw - ww));
+			ty = Math.min(Math.max(ty, Math.min(0, sh - wh)), Math.max(0, sh - wh));
+			world.style.transform = `translate(${tx}px, ${ty}px) scale(${scale})`;
+		};
+
+		const fitView = () => {
+			scale = Math.min(stage.clientWidth / extent.width, stage.clientHeight / extent.height);
+			tx = (stage.clientWidth - extent.width * scale) / 2;
+			ty = (stage.clientHeight - extent.height * scale) / 2;
+			applyView();
+		};
+
+		const zoomAt = (px: number, py: number, factor: number) => {
+			const next = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, scale * factor));
+			const k = next / scale;
+			tx = px - (px - tx) * k;
+			ty = py - (py - ty) * k;
+			scale = next;
+			userZoomed = true;
+			applyView();
+		};
+
+		stage.addEventListener(
+			'wheel',
+			(ev) => {
+				ev.preventDefault();
+				const rect = stage.getBoundingClientRect();
+				zoomAt(ev.clientX - rect.left, ev.clientY - rect.top, Math.exp(-ev.deltaY * 0.0015));
+			},
+			{ passive: false }
+		);
+
+		// Pointer pan on the canvas background; a second pointer turns the
+		// gesture into a pinch around its midpoint. A still press (under 5px
+		// of travel) clears the selection, replacing the old click handler.
+		const pointers = new Map<number, { x: number; y: number }>();
+		let panStart: { x: number; y: number; tx: number; ty: number } | null = null;
+		let pinchStart: {
+			dist: number;
+			scale: number;
+			x: number;
+			y: number;
+			tx: number;
+			ty: number;
+		} | null = null;
+		let panMoved = false;
+
+		stage.addEventListener('pointerdown', (ev) => {
+			if ((ev.target as Element).closest('.relmap-node')) return;
+			pointers.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+			try {
+				stage.setPointerCapture(ev.pointerId);
+			} catch {
+				/* pointer already gone; pan still works without capture */
+			}
+			panMoved = false;
+			if (pointers.size === 1) {
+				panStart = { x: ev.clientX, y: ev.clientY, tx, ty };
+			} else if (pointers.size === 2) {
+				const [a, b] = [...pointers.values()];
+				const rect = stage.getBoundingClientRect();
+				pinchStart = {
+					dist: Math.hypot(b.x - a.x, b.y - a.y) || 1,
+					scale,
+					x: (a.x + b.x) / 2 - rect.left,
+					y: (a.y + b.y) / 2 - rect.top,
+					tx,
+					ty
+				};
+				panStart = null;
+				panMoved = true;
+			}
+		});
+
+		stage.addEventListener('pointermove', (ev) => {
+			const p = pointers.get(ev.pointerId);
+			if (!p) return;
+			p.x = ev.clientX;
+			p.y = ev.clientY;
+			if (pointers.size === 1 && panStart) {
+				const dx = ev.clientX - panStart.x;
+				const dy = ev.clientY - panStart.y;
+				if (!panMoved && Math.hypot(dx, dy) > 5) panMoved = true;
+				tx = panStart.tx + dx;
+				ty = panStart.ty + dy;
+				applyView();
+			} else if (pointers.size === 2 && pinchStart) {
+				const [a, b] = [...pointers.values()];
+				const dist = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+				const next = Math.min(
+					MAX_ZOOM,
+					Math.max(MIN_ZOOM, pinchStart.scale * (dist / pinchStart.dist))
+				);
+				const k = next / pinchStart.scale;
+				const rect = stage.getBoundingClientRect();
+				const mx = (a.x + b.x) / 2 - rect.left;
+				const my = (a.y + b.y) / 2 - rect.top;
+				tx = mx - (mx - pinchStart.tx) * k;
+				ty = my - (my - pinchStart.ty) * k;
+				scale = next;
+				userZoomed = true;
+				applyView();
+			}
+		});
+
+		const endCanvasPointer = (ev: PointerEvent) => {
+			if (!pointers.delete(ev.pointerId)) return;
+			if (pointers.size === 0) {
+				if (panStart && !panMoved) select(null);
+				panStart = null;
+				pinchStart = null;
+			} else if (pointers.size === 1) {
+				pinchStart = null;
+				const [p] = [...pointers.values()];
+				panStart = { x: p.x, y: p.y, tx, ty };
+			}
+		};
+		stage.addEventListener('pointerup', endCanvasPointer);
+		stage.addEventListener('pointercancel', endCanvasPointer);
+
+		// --- Node dragging ---------------------------------------------------
+		// A press on a node that travels under 5px falls through to the click
+		// handler (select/toggle); anything more drags the node and its edges.
+		let drag: {
+			node: HTMLElement;
+			id: string;
+			startX: number;
+			startY: number;
+			ox: number;
+			oy: number;
+			moved: boolean;
+		} | null = null;
+		let suppressClick = false;
+
+		const redrawEdges = (id: string) => {
+			const p = pos[id];
+			if (!p) return;
+			edges.forEach((edge, i) => {
+				if (edge.dataset.from === id) {
+					edge.setAttribute('x1', String(p.x));
+					edge.setAttribute('y1', String(p.y));
+					hitLines[i]?.setAttribute('x1', String(p.x));
+					hitLines[i]?.setAttribute('y1', String(p.y));
+				}
+				if (edge.dataset.to === id) {
+					edge.setAttribute('x2', String(p.x));
+					edge.setAttribute('y2', String(p.y));
+					hitLines[i]?.setAttribute('x2', String(p.x));
+					hitLines[i]?.setAttribute('y2', String(p.y));
+				}
+			});
+		};
+
+		for (const node of nodes) {
+			const id = node.dataset.id ?? '';
+			node.addEventListener('pointerdown', (ev) => {
+				if (ev.pointerType === 'mouse' && ev.button !== 0) return;
+				suppressClick = false;
+				const p = pos[id];
+				if (!p) return;
+				drag = { node, id, startX: ev.clientX, startY: ev.clientY, ox: p.x, oy: p.y, moved: false };
+				try {
+					node.setPointerCapture(ev.pointerId);
+				} catch {
+					/* pointer already gone; drag still works without capture */
+				}
+			});
+			node.addEventListener('pointermove', (ev) => {
+				if (!drag || drag.node !== node) return;
+				const dx = (ev.clientX - drag.startX) / scale;
+				const dy = (ev.clientY - drag.startY) / scale;
+				if (!drag.moved) {
+					if (Math.hypot(dx, dy) < 5) return;
+					drag.moved = true;
+					node.classList.add('is-dragging');
+					hideTip();
+				}
+				const p = pos[id];
+				p.x = Math.min(Math.max(drag.ox + dx, 70), extent.width - 70);
+				p.y = Math.min(Math.max(drag.oy + dy, 64), extent.height - 70);
+				node.style.left = `${p.x}px`;
+				node.style.top = `${p.y}px`;
+				redrawEdges(id);
+			});
+			const endDrag = () => {
+				if (!drag || drag.node !== node) return;
+				if (drag.moved) suppressClick = true;
+				node.classList.remove('is-dragging');
+				drag = null;
+			};
+			node.addEventListener('pointerup', endDrag);
+			node.addEventListener('pointercancel', endDrag);
+		}
 
 		const fillPanel = (c: Char) => {
 			if (!metaEl || !nameEl || !titleEl || !excerptEl || !connCountEl) return;
@@ -293,7 +540,25 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 			history.replaceState(null, '', url);
 		};
 
-		const select = (id: string | null, viaKeyboard = false) => {
+		// Bring a node toward the center of the visible stage. Runs straight
+		// after render(): reading clientWidth forces the layout with the
+		// dossier already open, so no frame wait is needed. If the user has
+		// not zoomed manually, refit first — and zoom to natural size, since
+		// at the fit scale the whole chart is visible and cannot pan.
+		const reveal = (id: string) => {
+			const p = pos[id];
+			if (!p) return;
+			if (!userZoomed) {
+				fitView();
+				scale = Math.max(scale, 1);
+				userZoomed = true;
+			}
+			tx = stage.clientWidth / 2 - p.x * scale;
+			ty = stage.clientHeight / 2 - p.y * scale;
+			applyView();
+		};
+
+		const select = (id: string | null, viaKeyboard = false, revealIt = false) => {
 			selectedId = id;
 			render();
 			if (id) {
@@ -302,6 +567,7 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 				if (statusEl) statusEl.textContent = `${c?.name ?? id} — dossier open`;
 				panel.setAttribute('aria-label', `Dossier: ${c?.name ?? id}`);
 				setHash(`#char-${id}`);
+				if (revealIt) reveal(id);
 				// preventScroll: the dossier must open showing the meta row and
 				// close button; focusing the name would otherwise scroll them out.
 				if (viaKeyboard) nameEl?.focus({ preventScroll: true });
@@ -314,6 +580,10 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 
 		for (const node of nodes) {
 			node.addEventListener('click', (ev) => {
+				if (suppressClick) {
+					suppressClick = false;
+					return;
+				}
 				lastTrigger = node;
 				const id = node.dataset.id ?? null;
 				if (id === selectedId) {
@@ -328,7 +598,7 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 		connListEl.addEventListener('click', (ev) => {
 			const chip = (ev.target as HTMLElement).closest<HTMLElement>('.relmap-chip');
 			if (!chip?.dataset.to) return;
-			select(chip.dataset.to, ev instanceof MouseEvent && ev.detail === 0);
+			select(chip.dataset.to, ev instanceof MouseEvent && ev.detail === 0, true);
 		});
 
 		closeBtn?.addEventListener('click', () => {
@@ -336,15 +606,36 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 			lastTrigger?.focus();
 		});
 
-		// Clicking the chart plate (not a node) clears the selection.
-		stage.addEventListener('click', (ev) => {
-			if (ev.target === stage) select(null);
-		});
-
+		// Escape closes the dossier; arrow keys nudge the selected node when
+		// focus is inside the chart (Shift = 10-unit steps).
 		document.addEventListener('keydown', (ev) => {
-			if (ev.key !== 'Escape' || !selectedId) return;
-			select(null);
-			lastTrigger?.focus();
+			if (ev.key === 'Escape') {
+				if (selectedId) {
+					select(null);
+					lastTrigger?.focus();
+				}
+				return;
+			}
+			const step = (
+				{
+					ArrowLeft: [-1, 0],
+					ArrowRight: [1, 0],
+					ArrowUp: [0, -1],
+					ArrowDown: [0, 1]
+				} as Record<string, [number, number]>
+			)[ev.key];
+			if (!step || !selectedId || !root.contains(ev.target as Node)) return;
+			const p = pos[selectedId];
+			const mult = ev.shiftKey ? 10 : 1;
+			p.x = Math.min(Math.max(p.x + step[0] * mult, 70), extent.width - 70);
+			p.y = Math.min(Math.max(p.y + step[1] * mult, 64), extent.height - 70);
+			const node = nodes.find((n) => n.dataset.id === selectedId);
+			if (node) {
+				node.style.left = `${p.x}px`;
+				node.style.top = `${p.y}px`;
+			}
+			redrawEdges(selectedId);
+			ev.preventDefault();
 		});
 
 		// Edge hover: one tooltip at the cursor names the relationship. The
@@ -377,12 +668,64 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 			if ((ev.target as Element).closest?.('.relmap-edge-hit')) hideTip();
 		});
 
+		// --- Controls: zoom buttons, reset, Copy layout export ---------------
+		const copyLayout = async () => {
+			const moved: Record<string, { x: number; y: number }> = {};
+			for (const c of data.characters) {
+				const p = pos[c.id];
+				const d = defaultPos[c.id];
+				if (!p || !d) continue;
+				if (Math.abs(p.x - d.x) > 0.5 || Math.abs(p.y - d.y) > 0.5) {
+					moved[c.id] = { x: Math.round(p.x * 10) / 10, y: Math.round(p.y * 10) / 10 };
+				}
+			}
+			const count = Object.keys(moved).length;
+			const text = JSON.stringify(moved, null, '\t');
+			try {
+				await navigator.clipboard.writeText(text);
+				if (statusEl) {
+					statusEl.textContent =
+						count > 0
+							? `Layout copied (${count} moved) — paste it into layoutOverrides in src/data/characters.ts.`
+							: 'No nodes moved — the computed layout is already the default.';
+				}
+			} catch {
+				if (statusEl)
+					statusEl.textContent = 'Clipboard blocked — layout JSON printed to the browser console.';
+				console.log('[relmap] layoutOverrides =', text);
+			}
+		};
+
+		const controls = root.querySelector<HTMLElement>('.relmap-controls');
+		controls?.addEventListener('click', (ev) => {
+			const btn = (ev.target as HTMLElement).closest<HTMLButtonElement>('.relmap-ctrl');
+			if (!btn) return;
+			if (btn.dataset.act === 'zoom-in') {
+				zoomAt(stage.clientWidth / 2, stage.clientHeight / 2, 1.3);
+			} else if (btn.dataset.act === 'zoom-out') {
+				zoomAt(stage.clientWidth / 2, stage.clientHeight / 2, 1 / 1.3);
+			} else if (btn.dataset.act === 'reset') {
+				userZoomed = false;
+				fitView();
+			} else if (btn.dataset.act === 'copy') {
+				copyLayout();
+			}
+		});
+
+		// Panel squeeze and viewport changes rescale the fit unless the user
+		// has zoomed deliberately.
+		window.addEventListener('resize', () => {
+			if (!userZoomed) fitView();
+			else applyView();
+		});
+
 		const applyHash = () => {
 			const match = window.location.hash.match(/^#char-([a-z0-9-]+)$/);
-			if (match && byId.has(match[1])) select(match[1]);
+			if (match && byId.has(match[1])) select(match[1], false, true);
 			else if (selectedId) select(null);
 		};
 		window.addEventListener('hashchange', applyHash);
+		fitView();
 		applyHash();
 	})();
 </script>
@@ -411,18 +754,26 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 	.relmap-scroll {
 		flex: 1 1 auto;
 		min-width: 0;
-		overflow-x: auto;
+		overflow: hidden;
 	}
+	/* The stage is a viewport onto the world layer (the chart at fixed design
+	   px). Pan/zoom is one transform on the world; overflow stays hidden
+	   because panning replaces scrolling. touch-action keeps vertical page
+	   scroll working over the canvas while pan/pinch are handled here. */
 	.relmap-stage {
 		position: relative;
 		width: 100%;
-		min-width: 860px;
-		container-type: inline-size;
+		overflow: hidden;
+		touch-action: pan-y;
+		user-select: none;
+		-webkit-user-select: none;
 	}
-	@media (min-width: 1024px) {
-		.relmap-stage {
-			min-width: 0;
-		}
+	.relmap-world {
+		position: absolute;
+		top: 0;
+		left: 0;
+		transform-origin: 0 0;
+		will-change: transform;
 	}
 
 	/* Edges: kind carries the color (bond azure, division dashed slate,
@@ -504,22 +855,28 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 		visibility: visible;
 	}
 
-	/* Nodes: portrait circle + name plate. The one glow on the chart is the
-	   selected portrait's focus ring; everything else stays matte. */
+	/* Nodes: portrait circle + name plate. Sizes are world px (the world is
+	   the chart at fixed design size), so zoom scales everything uniformly.
+	   The one glow on the chart is the selected portrait's focus ring. */
 	.relmap-node {
 		position: absolute;
 		z-index: 2;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 0.35cqw;
-		padding: 0.4cqw;
+		gap: 4px;
+		padding: 5px;
 		background: transparent;
 		border: 0;
 		border-radius: var(--radius-arch);
-		cursor: pointer;
+		cursor: grab;
+		touch-action: none;
 		transform: translate(-50%, -50%);
 		transition: opacity 0.2s ease-in-out;
+	}
+	.relmap-node.is-dragging {
+		z-index: 9;
+		cursor: grabbing;
 	}
 	.relmap-node.is-dim {
 		opacity: 0.25;
@@ -527,10 +884,8 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 	.relmap-portrait {
 		position: relative;
 		display: block;
-		width: 5.4cqw;
-		height: 5.4cqw;
-		min-width: 48px;
-		min-height: 48px;
+		width: 62px;
+		height: 62px;
 		border-radius: 999px;
 		overflow: hidden;
 		background-color: var(--color-bg-tertiary);
@@ -554,7 +909,7 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 		width: 100%;
 		height: 100%;
 		font-family: var(--font-mono);
-		font-size: max(11px, 1.4cqw);
+		font-size: 16px;
 		letter-spacing: 0.08em;
 		color: var(--color-accent-azure);
 	}
@@ -567,7 +922,7 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 		right: -8px;
 		padding: 0 4px;
 		font-family: var(--font-mono);
-		font-size: max(8px, 0.65cqw);
+		font-size: 8px;
 		line-height: 1.5;
 		color: var(--color-accent-gold);
 		background-color: var(--color-bg-primary);
@@ -575,9 +930,9 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 		border-radius: 2px;
 	}
 	.relmap-name {
-		max-width: 9.5cqw;
+		max-width: 110px;
 		font-family: var(--font-mono);
-		font-size: max(10px, 1cqw);
+		font-size: 11.5px;
 		line-height: 1.25;
 		text-align: center;
 		color: var(--color-text-secondary);
@@ -794,8 +1149,53 @@ const pct = (value: number, total: number) => `${((value / total) * 100).toFixed
 		border-color: var(--color-accent-gold);
 	}
 
+	/* View controls: zoom, reset, and the Copy layout export, pinned to the
+	   frame's top-left corner above the chart. */
+	.relmap-controls {
+		position: absolute;
+		z-index: 7;
+		top: 0.5rem;
+		left: 0.5rem;
+		display: flex;
+		gap: 0.35rem;
+	}
+	.relmap-ctrl {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 2rem;
+		height: 2rem;
+		padding: 0 0.5rem;
+		font-family: var(--font-mono);
+		font-size: 0.85rem;
+		line-height: 1;
+		color: var(--color-text-secondary);
+		background-color: var(--color-bg-secondary);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: var(--radius-arch);
+		cursor: pointer;
+		transition:
+			color 0.2s ease-in-out,
+			border-color 0.2s ease-in-out;
+	}
+	.relmap-ctrl:hover {
+		color: var(--color-accent-azure);
+		border-color: var(--color-accent-azure);
+	}
+	.relmap-ctrl.is-text {
+		font-size: 0.65rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+	@media (pointer: coarse) {
+		.relmap-ctrl {
+			min-width: 2.75rem;
+			min-height: 2.75rem;
+		}
+	}
+
 	/* Mobile: the panel becomes a bottom sheet over the frame; the chart
-	   itself scrolls horizontally beneath it. */
+	   pans and zooms in place. */
 	@media (max-width: 1023.98px) {
 		.relmap-panel {
 			position: absolute;
