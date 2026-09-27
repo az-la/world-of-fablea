@@ -1,0 +1,36 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ArchiveHeader from '../../components/ArchiveHeader.astro';
+import RelationshipMap from '../../components/RelationshipMap.astro';
+import { characters, relationships } from '../../data/characters';
+---
+
+<Layout
+	title="Character Relationship Map — World of Fablea: Archival Database"
+	description="The twelve Earthians and the figures filed alongside them, plotted as one relationship chart. Select a node to open its dossier."
+>
+	<div class="container-archival pb-16 pt-28 md:pt-32">
+		<ArchiveHeader
+			archiveId="C-01"
+			category="The Relationship Chart"
+			title="Characters of Fablea"
+			subtitle="Who stands with whom."
+		/>
+		<p class="mb-8 max-w-2xl text-sm leading-relaxed text-text-secondary md:text-base">
+			{
+				`The twelve summoned Earthians, and the figures the archive files alongside them: ${characters.length} subjects joined by ${relationships.length} links. Select any node to open its dossier; a connection listed there opens its own dossier in turn.`
+			}
+		</p>
+
+		<RelationshipMap />
+
+		<div class="mt-14">
+			<a
+				href="./"
+				class="link-hover-underline font-mono text-xs uppercase tracking-[0.1em] text-accent-azure transition-colors duration-200 hover:text-accent-gold"
+			>
+				Back to the Archive
+			</a>
+		</div>
+	</div>
+</Layout>

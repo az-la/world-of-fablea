@@ -1,0 +1,832 @@
+---
+// The relationship chart: a fixed-aspect stage with server-rendered SVG
+// edges and HTML node buttons, plus a dossier panel that opens on selection.
+// Edges and node coordinates come from the deterministic build-time layout;
+// the client script only toggles selection state.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { characters, relationships, layoutOverrides } from '../data/characters';
+import { computeDiagramLayout } from '../lib/diagramLayout';
+
+const { width, height, positions } = computeDiagramLayout(characters, relationships, {
+	overrides: layoutOverrides
+});
+
+// Portraits: drop <id>.jpg (or .png/.webp) into src/assets/characters/ and it
+// replaces the monogram placeholder on the next build.
+const portraitModules = import.meta.glob<{ default: ImageMetadata }>(
+	'../assets/characters/*.{jpg,jpeg,png,webp}',
+	{ eager: true }
+);
+const portraitFor = (id: string) => {
+	const entry = Object.entries(portraitModules).find(([path]) => {
+		const file = path.split('/').pop() ?? '';
+		return file.replace(/\.(jpg|jpeg|png|webp)$/, '') === id;
+	});
+	return entry?.[1].default;
+};
+
+const monogramOf = (name: string) => {
+	const parts = name.split(/\s+/).filter(Boolean);
+	return ((parts[0]?.[0] ?? '') + (parts[1]?.[0] ?? '')).toUpperCase();
+};
+
+// Dossier payloads for the client script, one entry per character with its
+// connections already resolved in both directions.
+interface Conn {
+	to: string;
+	label: string;
+	kind: string;
+}
+const connections: Record<string, Conn[]> = {};
+for (const c of characters) connections[c.id] = [];
+for (const r of relationships) {
+	connections[r.from]?.push({ to: r.to, label: r.label, kind: r.kind });
+	connections[r.to]?.push({ to: r.from, label: r.reverse ?? r.label, kind: r.kind });
+}
+const payload = JSON.stringify({ characters, connections }).replace(/</g, '\\u003c');
+
+const edges = relationships.map((r) => {
+	const a = positions[r.from];
+	const b = positions[r.to];
+	return { ...r, x1: a.x, y1: a.y, x2: b.x, y2: b.y };
+});
+
+const pct = (value: number, total: number) => `${((value / total) * 100).toFixed(3)}%`;
+---
+
+<div id="relmap" class="relmap" data-state="empty">
+	<p class="relmap-status" role="status">
+		Awaiting selection: select a node on the chart to open its dossier. Escape closes it.
+	</p>
+	<div class="relmap-frame">
+		<div class="relmap-scroll">
+			<div class="relmap-stage" role="group" aria-label="Character relationship chart" style={`aspect-ratio: ${width} / ${height};`}>
+				<svg class="relmap-edges" viewBox={`0 0 ${width} ${height}`} aria-hidden="true">
+					{
+						edges.map((e, i) => (
+							<line
+								class="relmap-edge"
+								data-eidx={i}
+								data-kind={e.kind}
+								data-from={e.from}
+								data-to={e.to}
+								x1={e.x1}
+								y1={e.y1}
+								x2={e.x2}
+								y2={e.y2}
+								vector-effect="non-scaling-stroke"
+							/>
+						))
+					}
+					{
+						edges.map((e, i) => (
+							<line
+								class="relmap-edge-hit"
+								data-eidx={i}
+								data-kind={e.kind}
+								data-label={e.label}
+								x1={e.x1}
+								y1={e.y1}
+								x2={e.x2}
+								y2={e.y2}
+								vector-effect="non-scaling-stroke"
+							/>
+						))
+					}
+				</svg>
+				{
+					characters.map((c) => {
+						const p = positions[c.id];
+						const portrait = portraitFor(c.id);
+						return (
+							<button
+								type="button"
+								id={`char-${c.id}`}
+								class:list={['relmap-node', c.kind === 'earthian' ? 'is-earthian' : 'is-figure']}
+								data-id={c.id}
+								aria-pressed="false"
+								style={`left: ${pct(p.x, width)}; top: ${pct(p.y, height)};`}
+							>
+								<span class="relmap-portrait" aria-hidden="true">
+									{portrait ? (
+										<Image
+											src={portrait}
+											alt=""
+											widths={[72, 144]}
+											sizes="(min-width: 1024px) 64px, 48px"
+											quality={80}
+											loading="lazy"
+											decoding="async"
+											class="relmap-photo"
+										/>
+									) : (
+										<span class="relmap-monogram">{monogramOf(c.name)}</span>
+									)}
+									{c.kind === 'earthian' && c.no && <span class="relmap-no">{c.no}</span>}
+								</span>
+								<span class="relmap-name">{c.name}</span>
+							</button>
+						);
+					})
+				}
+				<span class="relmap-tip" aria-hidden="true"></span>
+			</div>
+		</div>
+
+		<aside class="relmap-panel" aria-label="Character dossier">
+			<div class="relmap-panel-body" hidden>
+				<div class="relmap-panel-top">
+					<p class="relmap-panel-meta"></p>
+					<button type="button" class="relmap-panel-close" aria-label="Close dossier">&times;</button>
+				</div>
+				<h3 class="relmap-panel-name" tabindex="-1"></h3>
+				<p class="relmap-panel-title"></p>
+				<p class="relmap-panel-excerpt"></p>
+				<p class="relmap-panel-conncount"></p>
+				<ul class="relmap-panel-conns"></ul>
+			</div>
+		</aside>
+	</div>
+
+	<div class="relmap-legend">
+		<span class="relmap-legend-item">
+			<span class="relmap-legend-line is-bond" aria-hidden="true"></span>
+			Personal bond
+		</span>
+		<span class="relmap-legend-item">
+			<span class="relmap-legend-line is-division" aria-hidden="true"></span>
+			Division / role
+		</span>
+		<span class="relmap-legend-item">
+			<span class="relmap-legend-line is-rival" aria-hidden="true"></span>
+			Rivalry
+		</span>
+		<span class="relmap-legend-item">
+			<span class="relmap-legend-ring is-earthian" aria-hidden="true"></span>
+			Earthian
+		</span>
+		<span class="relmap-legend-item">
+			<span class="relmap-legend-ring is-figure" aria-hidden="true"></span>
+			Figure
+		</span>
+	</div>
+
+	<script type="application/json" id="relmap-data" set:html={payload} />
+</div>
+
+<script>
+	(function () {
+		const root = document.getElementById('relmap');
+		const dataEl = document.getElementById('relmap-data');
+		if (!root || !dataEl?.textContent) return;
+
+		interface Char {
+			id: string;
+			name: string;
+			kind: string;
+			no?: string;
+			title?: string;
+			faction?: string;
+			excerpt: string;
+		}
+		interface Conn {
+			to: string;
+			label: string;
+			kind: string;
+		}
+		const data = JSON.parse(dataEl.textContent) as {
+			characters: Char[];
+			connections: Record<string, Conn[]>;
+		};
+		const byId = new Map(data.characters.map((c) => [c.id, c] as const));
+		const adjacent = new Map<string, Set<string>>(
+			data.characters.map((c) => [c.id, new Set((data.connections[c.id] ?? []).map((k) => k.to))])
+		);
+
+		const stage = root.querySelector<HTMLElement>('.relmap-stage');
+		const nodes = Array.from(root.querySelectorAll<HTMLElement>('.relmap-node'));
+		const edges = Array.from(root.querySelectorAll<SVGElement>('.relmap-edge'));
+		const hitLines = Array.from(root.querySelectorAll<SVGElement>('.relmap-edge-hit'));
+		const tip = root.querySelector<HTMLElement>('.relmap-tip');
+		const panel = root.querySelector<HTMLElement>('.relmap-panel');
+		const statusEl = root.querySelector<HTMLElement>('.relmap-status');
+		const body = panel?.querySelector<HTMLElement>('.relmap-panel-body');
+		const closeBtn = panel?.querySelector<HTMLButtonElement>('.relmap-panel-close');
+		const metaEl = panel?.querySelector<HTMLElement>('.relmap-panel-meta');
+		const nameEl = panel?.querySelector<HTMLElement>('.relmap-panel-name');
+		const titleEl = panel?.querySelector<HTMLElement>('.relmap-panel-title');
+		const excerptEl = panel?.querySelector<HTMLElement>('.relmap-panel-excerpt');
+		const connCountEl = panel?.querySelector<HTMLElement>('.relmap-panel-conncount');
+		const connListEl = panel?.querySelector<HTMLElement>('.relmap-panel-conns');
+		if (!stage || !panel || !body || !connListEl || !tip) return;
+		const statusIdle = statusEl?.textContent ?? '';
+
+		const chipKindClass: Record<string, string> = {
+			bond: 'is-bond',
+			division: 'is-division',
+			rival: 'is-rival'
+		};
+
+		let selectedId: string | null = null;
+		let lastTrigger: HTMLElement | null = null;
+
+		const fillPanel = (c: Char) => {
+			if (!metaEl || !nameEl || !titleEl || !excerptEl || !connCountEl) return;
+			const meta = [
+				c.kind === 'earthian' ? `Earthian / ${c.no ?? '??'}` : 'Figure',
+				c.faction
+			]
+				.filter(Boolean)
+				.join(' / ');
+			metaEl.textContent = meta;
+			nameEl.textContent = c.name;
+			titleEl.textContent = c.title ?? '';
+			titleEl.hidden = !c.title;
+			excerptEl.textContent = c.excerpt;
+			const conns = data.connections[c.id] ?? [];
+			connCountEl.textContent = `Connections / ${conns.length}`;
+			connListEl.replaceChildren(
+				...conns.map((conn) => {
+					const li = document.createElement('li');
+					const chip = document.createElement('button');
+					chip.type = 'button';
+					chip.className = `relmap-chip ${chipKindClass[conn.kind] ?? ''}`;
+					chip.dataset.to = conn.to;
+					const name = document.createElement('span');
+					name.className = 'relmap-chip-name';
+					name.textContent = byId.get(conn.to)?.name ?? conn.to;
+					const label = document.createElement('span');
+					label.className = 'relmap-chip-label';
+					label.textContent = conn.label;
+					chip.append(name, label);
+					li.append(chip);
+					return li;
+				})
+			);
+		};
+
+		const render = () => {
+			root.dataset.state = selectedId ? 'open' : 'empty';
+			body.hidden = !selectedId;
+			for (const node of nodes) {
+				const id = node.dataset.id ?? '';
+				const isSel = id === selectedId;
+				node.classList.toggle('is-selected', isSel);
+				node.setAttribute('aria-pressed', String(isSel));
+				const linked = selectedId ? (adjacent.get(selectedId)?.has(id) ?? false) : true;
+				node.classList.toggle('is-dim', !!selectedId && !isSel && !linked);
+			}
+			for (const edge of edges) {
+				const hit =
+					selectedId && (edge.dataset.from === selectedId || edge.dataset.to === selectedId);
+				edge.classList.toggle('is-active', !!hit);
+				edge.classList.toggle('is-dim', !!selectedId && !hit);
+			}
+		};
+
+		// The site <base> tag makes a hash-only replaceState resolve against
+		// the base URL, which would rewrite the path to the site root. Always
+		// reuse the current absolute path and append the hash.
+		const setHash = (hash: string | null) => {
+			const url = `${window.location.pathname}${window.location.search}${hash ?? ''}`;
+			history.replaceState(null, '', url);
+		};
+
+		const select = (id: string | null, viaKeyboard = false) => {
+			selectedId = id;
+			render();
+			if (id) {
+				const c = byId.get(id);
+				if (c) fillPanel(c);
+				if (statusEl) statusEl.textContent = `${c?.name ?? id} — dossier open`;
+				panel.setAttribute('aria-label', `Dossier: ${c?.name ?? id}`);
+				setHash(`#char-${id}`);
+				// preventScroll: the dossier must open showing the meta row and
+				// close button; focusing the name would otherwise scroll them out.
+				if (viaKeyboard) nameEl?.focus({ preventScroll: true });
+			} else {
+				if (statusEl) statusEl.textContent = statusIdle;
+				panel.setAttribute('aria-label', 'Character dossier');
+				if (window.location.hash.startsWith('#char-')) setHash(null);
+			}
+		};
+
+		for (const node of nodes) {
+			node.addEventListener('click', (ev) => {
+				lastTrigger = node;
+				const id = node.dataset.id ?? null;
+				if (id === selectedId) {
+					select(null);
+					node.focus();
+				} else {
+					select(id, ev instanceof MouseEvent && ev.detail === 0);
+				}
+			});
+		}
+
+		connListEl.addEventListener('click', (ev) => {
+			const chip = (ev.target as HTMLElement).closest<HTMLElement>('.relmap-chip');
+			if (!chip?.dataset.to) return;
+			select(chip.dataset.to, ev instanceof MouseEvent && ev.detail === 0);
+		});
+
+		closeBtn?.addEventListener('click', () => {
+			select(null);
+			lastTrigger?.focus();
+		});
+
+		// Clicking the chart plate (not a node) clears the selection.
+		stage.addEventListener('click', (ev) => {
+			if (ev.target === stage) select(null);
+		});
+
+		document.addEventListener('keydown', (ev) => {
+			if (ev.key !== 'Escape' || !selectedId) return;
+			select(null);
+			lastTrigger?.focus();
+		});
+
+		// Edge hover: one tooltip at the cursor names the relationship. The
+		// wide invisible hit lines make the thin strokes hoverable; the
+		// dossier panel carries the full labeled list for keyboard users.
+		const edgeOfIndex = (i: string | undefined) =>
+			i === undefined ? null : (edges[Number(i)] ?? null);
+		const hideTip = () => {
+			tip.classList.remove('is-visible');
+			edges.forEach((e) => e.classList.remove('is-hover'));
+		};
+		stage.addEventListener('mouseover', (ev) => {
+			const hit = (ev.target as Element).closest?.('.relmap-edge-hit');
+			if (!hit) return;
+			const visible = edgeOfIndex(hit.getAttribute('data-eidx'));
+			if (visible) visible.classList.add('is-hover');
+			tip.textContent = hit.getAttribute('data-label') ?? '';
+			tip.dataset.kind = hit.getAttribute('data-kind') ?? '';
+			tip.classList.add('is-visible');
+		});
+		stage.addEventListener('mousemove', (ev) => {
+			if (!tip.classList.contains('is-visible')) return;
+			const rect = stage.getBoundingClientRect();
+			const x = Math.min(Math.max(ev.clientX - rect.left, 90), rect.width - 90);
+			const y = Math.max(ev.clientY - rect.top, 34);
+			tip.style.left = `${x}px`;
+			tip.style.top = `${y}px`;
+		});
+		stage.addEventListener('mouseout', (ev) => {
+			if ((ev.target as Element).closest?.('.relmap-edge-hit')) hideTip();
+		});
+
+		const applyHash = () => {
+			const match = window.location.hash.match(/^#char-([a-z0-9-]+)$/);
+			if (match && byId.has(match[1])) select(match[1]);
+			else if (selectedId) select(null);
+		};
+		window.addEventListener('hashchange', applyHash);
+		applyHash();
+	})();
+</script>
+
+<style is:global>
+	.relmap {
+		position: relative;
+	}
+	.relmap-status {
+		margin-bottom: 0.6rem;
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-text-muted);
+	}
+	.relmap-frame {
+		position: relative;
+		display: flex;
+		align-items: stretch;
+		overflow: hidden;
+		background-color: var(--color-bg-primary);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: var(--radius-arch);
+	}
+	.relmap-scroll {
+		flex: 1 1 auto;
+		min-width: 0;
+		overflow-x: auto;
+	}
+	.relmap-stage {
+		position: relative;
+		width: 100%;
+		min-width: 860px;
+		container-type: inline-size;
+	}
+	@media (min-width: 1024px) {
+		.relmap-stage {
+			min-width: 0;
+		}
+	}
+
+	/* Edges: kind carries the color (bond azure, division dashed slate,
+	   rival restricted-red); all from the existing token palette. */
+	.relmap-edges {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		pointer-events: none;
+	}
+	.relmap-edge {
+		stroke: var(--color-text-muted);
+		stroke-width: 1.25;
+		stroke-opacity: 0.28;
+		transition:
+			stroke-opacity 0.2s ease-in-out,
+			stroke-width 0.2s ease-in-out;
+	}
+	.relmap-edge[data-kind='bond'] {
+		stroke: var(--color-accent-azure);
+	}
+	.relmap-edge[data-kind='division'] {
+		stroke-dasharray: 5 4;
+	}
+	.relmap-edge[data-kind='rival'] {
+		stroke: var(--color-accent-restricted);
+	}
+	.relmap-edge.is-active {
+		stroke-opacity: 0.95;
+		stroke-width: 2;
+	}
+	.relmap-edge.is-dim {
+		stroke-opacity: 0.05;
+	}
+
+	/* Edge hover affordance: a wide invisible stroke over each thin line,
+	   plus one cursor-following tooltip. A single tooltip cannot collide
+	   with anything; the full labeled list lives in the dossier panel. */
+	.relmap-edge-hit {
+		stroke: transparent;
+		stroke-width: 14;
+		pointer-events: stroke;
+		cursor: help;
+	}
+	.relmap-edge.is-hover {
+		stroke-opacity: 0.85;
+		stroke-width: 2;
+	}
+	.relmap-tip {
+		position: absolute;
+		z-index: 6;
+		transform: translate(-50%, -130%);
+		max-width: 200px;
+		padding: 0.3rem 0.55rem;
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		line-height: 1.35;
+		text-align: center;
+		color: var(--color-text-primary);
+		background-color: var(--color-bg-primary);
+		border: 1px solid var(--color-border-subtle);
+		border-radius: var(--radius-arch);
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition:
+			opacity 0.15s ease-in-out,
+			visibility 0.15s ease-in-out;
+	}
+	.relmap-tip[data-kind='bond'] {
+		border-color: var(--color-accent-azure);
+	}
+	.relmap-tip[data-kind='rival'] {
+		border-color: var(--color-accent-restricted);
+	}
+	.relmap-tip.is-visible {
+		opacity: 1;
+		visibility: visible;
+	}
+
+	/* Nodes: portrait circle + name plate. The one glow on the chart is the
+	   selected portrait's focus ring; everything else stays matte. */
+	.relmap-node {
+		position: absolute;
+		z-index: 2;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.35cqw;
+		padding: 0.4cqw;
+		background: transparent;
+		border: 0;
+		border-radius: var(--radius-arch);
+		cursor: pointer;
+		transform: translate(-50%, -50%);
+		transition: opacity 0.2s ease-in-out;
+	}
+	.relmap-node.is-dim {
+		opacity: 0.25;
+	}
+	.relmap-portrait {
+		position: relative;
+		display: block;
+		width: 5.4cqw;
+		height: 5.4cqw;
+		min-width: 48px;
+		min-height: 48px;
+		border-radius: 999px;
+		overflow: hidden;
+		background-color: var(--color-bg-tertiary);
+		border: 2px solid var(--color-border-subtle);
+		transition:
+			border-color 0.2s ease-in-out,
+			box-shadow 0.2s ease-in-out;
+	}
+	.is-earthian .relmap-portrait {
+		border-color: color-mix(in srgb, var(--color-accent-gold) 60%, transparent);
+	}
+	.relmap-photo {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+	.relmap-monogram {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		height: 100%;
+		font-family: var(--font-mono);
+		font-size: max(11px, 1.4cqw);
+		letter-spacing: 0.08em;
+		color: var(--color-accent-azure);
+	}
+	.is-earthian .relmap-monogram {
+		color: var(--color-accent-gold);
+	}
+	.relmap-no {
+		position: absolute;
+		top: -4px;
+		right: -8px;
+		padding: 0 4px;
+		font-family: var(--font-mono);
+		font-size: max(8px, 0.65cqw);
+		line-height: 1.5;
+		color: var(--color-accent-gold);
+		background-color: var(--color-bg-primary);
+		border: 1px solid color-mix(in srgb, var(--color-accent-gold) 55%, transparent);
+		border-radius: 2px;
+	}
+	.relmap-name {
+		max-width: 9.5cqw;
+		font-family: var(--font-mono);
+		font-size: max(10px, 1cqw);
+		line-height: 1.25;
+		text-align: center;
+		color: var(--color-text-secondary);
+		overflow-wrap: break-word;
+		transition: color 0.2s ease-in-out;
+	}
+	.relmap-node:hover .relmap-name,
+	.relmap-node.is-selected .relmap-name {
+		color: var(--color-accent-azure);
+	}
+	.relmap-node.is-selected .relmap-portrait {
+		border-color: var(--color-accent-azure);
+		box-shadow: 0 0 0 4px rgb(56 189 248 / 0.18);
+	}
+
+	/* Dossier panel: a column beside the chart, not over it. Opening it
+	   squeezes the stage, which rescales through the container-query units,
+	   so no node is ever hidden behind the panel. */
+	.relmap-panel {
+		display: none;
+		flex: 0 0 300px;
+		flex-direction: column;
+		min-height: 0;
+		background-color: var(--color-bg-secondary);
+		border-left: 1px solid var(--color-border-subtle);
+	}
+	#relmap[data-state='open'] .relmap-panel {
+		display: flex;
+	}
+	#relmap[data-state='empty'] .relmap-panel-body {
+		display: none;
+	}
+	.relmap-panel-body {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+	}
+	#relmap[data-state='open'] .relmap-panel-body {
+		flex: 1;
+		overflow-y: auto;
+	}
+	.relmap-panel-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 0.5rem;
+		padding: 0.9rem 1rem 0;
+	}
+	.relmap-panel-meta {
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: var(--color-text-muted);
+	}
+	.relmap-panel-close {
+		flex: none;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		color: var(--color-text-secondary);
+		background: transparent;
+		border: 1px solid var(--color-border-subtle);
+		border-radius: var(--radius-arch);
+		font-size: 1rem;
+		line-height: 1;
+		cursor: pointer;
+		transition:
+			color 0.2s ease-in-out,
+			border-color 0.2s ease-in-out;
+	}
+	.relmap-panel-close:hover {
+		color: var(--color-accent-azure);
+		border-color: var(--color-accent-azure);
+	}
+	@media (pointer: coarse) {
+		.relmap-panel-close {
+			min-width: 44px;
+			min-height: 44px;
+		}
+	}
+	.relmap-panel-name {
+		padding: 0.4rem 1rem 0;
+		font-family: var(--font-display);
+		font-size: 1.35rem;
+		line-height: 1.2;
+		color: var(--color-text-primary);
+		outline: none;
+	}
+	.relmap-panel-name:focus-visible {
+		outline: 2px solid var(--color-accent-azure);
+		outline-offset: 2px;
+	}
+	.relmap-panel-title {
+		padding: 0.3rem 1rem 0;
+		font-family: var(--font-mono);
+		font-size: 0.7rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-accent-gold);
+	}
+	.relmap-panel-title[hidden] {
+		display: none;
+	}
+	.relmap-panel-excerpt {
+		padding: 0.75rem 1rem 0;
+		font-size: 0.8125rem;
+		line-height: 1.6;
+		color: var(--color-text-secondary);
+	}
+	.relmap-panel-conncount {
+		padding: 1rem 1rem 0.6rem;
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		letter-spacing: 0.15em;
+		text-transform: uppercase;
+		color: var(--color-text-muted);
+	}
+	.relmap-panel-conns {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		margin: 0 1rem 1rem;
+		padding: 0;
+		list-style: none;
+	}
+	/* The chip's left edge marks real state: the relationship kind, same
+	   color code as the edges. */
+	.relmap-chip {
+		display: block;
+		width: 100%;
+		padding: 0.5rem 0.75rem;
+		text-align: left;
+		background-color: var(--color-bg-primary);
+		border: 1px solid var(--color-border-subtle);
+		border-left-width: 2px;
+		border-radius: var(--radius-arch);
+		cursor: pointer;
+		transition:
+			background-color 0.2s ease-in-out,
+			border-color 0.2s ease-in-out;
+	}
+	.relmap-chip.is-bond {
+		border-left-color: var(--color-accent-azure);
+	}
+	.relmap-chip.is-division {
+		border-left-color: var(--color-text-muted);
+	}
+	.relmap-chip.is-rival {
+		border-left-color: var(--color-accent-restricted);
+	}
+	.relmap-chip:hover {
+		background-color: var(--color-bg-tertiary);
+		border-top-color: var(--color-border-subtle);
+	}
+	.relmap-chip:hover .relmap-chip-name {
+		color: var(--color-accent-azure);
+	}
+	.relmap-chip-name {
+		display: block;
+		font-size: 0.8125rem;
+		line-height: 1.3;
+		color: var(--color-text-primary);
+	}
+	.relmap-chip-label {
+		display: block;
+		margin-top: 0.15rem;
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		line-height: 1.4;
+		color: var(--color-text-muted);
+	}
+
+	/* Legend: line and ring samples for the chart's color code. */
+	.relmap-legend {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1.5rem;
+		margin-top: 0.75rem;
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		letter-spacing: 0.05em;
+		color: var(--color-text-secondary);
+	}
+	.relmap-legend-item {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+	.relmap-legend-line {
+		display: inline-block;
+		width: 1.4rem;
+		border-top: 2px solid var(--color-text-muted);
+	}
+	.relmap-legend-line.is-bond {
+		border-top-color: var(--color-accent-azure);
+	}
+	.relmap-legend-line.is-division {
+		border-top-style: dashed;
+	}
+	.relmap-legend-line.is-rival {
+		border-top-color: var(--color-accent-restricted);
+	}
+	.relmap-legend-ring {
+		display: inline-block;
+		width: 0.8rem;
+		height: 0.8rem;
+		border-radius: 999px;
+		border: 2px solid var(--color-border-subtle);
+	}
+	.relmap-legend-ring.is-earthian {
+		border-color: var(--color-accent-gold);
+	}
+
+	/* Mobile: the panel becomes a bottom sheet over the frame; the chart
+	   itself scrolls horizontally beneath it. */
+	@media (max-width: 1023.98px) {
+		.relmap-panel {
+			position: absolute;
+			z-index: 5;
+			top: auto;
+			right: 0.5rem;
+			left: 0.5rem;
+			bottom: 0.5rem;
+			display: flex;
+			flex: 0 0 auto;
+			max-height: 62%;
+			border: 1px solid var(--color-border-subtle);
+			border-radius: var(--radius-arch);
+			box-shadow: 0 8px 24px rgb(0 0 0 / 0.4);
+			transform: translateY(calc(100% + 1.5rem));
+			transition: transform 0.25s ease-in-out;
+		}
+		#relmap[data-state='open'] .relmap-panel {
+			transform: none;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.relmap-edge,
+		.relmap-tip,
+		.relmap-node,
+		.relmap-portrait,
+		.relmap-name,
+		.relmap-chip,
+		.relmap-panel {
+			transition: none;
+		}
+	}
+</style>

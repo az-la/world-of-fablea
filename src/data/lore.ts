@@ -138,6 +138,16 @@ export const regionSectionImages: Record<string, Record<string, string>> = {
 		'People & Notable Residents': 'regions/woa-r12-people.jpg',
 		'Institutions & Organizations': 'regions/woa-r12-institutions.jpg',
 		'Restrictions & Access': 'regions/woa-r12-access.jpg'
+	},
+	'R-13': {
+		Overview: 'regions/woa-r13-overview.jpg',
+		'Geography & Location': 'regions/woa-r13-geography.jpg',
+		'Polities & Governance': 'regions/woa-r13-governance.jpg',
+		'Economy & Currency': 'regions/woa-r13-economy.jpg',
+		'Major Sites': 'regions/woa-r13-sites.jpg',
+		'People & Notable Residents': 'regions/woa-r13-people.jpg',
+		'Institutions & Organizations': 'regions/woa-r13-institutions.jpg',
+		'Restrictions & Access': 'regions/woa-r13-access.jpg'
 	}
 };
 
@@ -182,17 +192,19 @@ export const regions: Region[] = [
 		id: 'R-01',
 		title: 'Twin Isles',
 		excerpt:
-			'Two identical islands at the middle of the open ocean. Small hills, rich vegetation, species found nowhere on Earth. Azure Land claims them as territory; Taihei is a faction-state on the southern isle.',
+			'Two identical islands at the middle of the open ocean, shaped like an hourglass. Small hills, rich vegetation, species found nowhere on Earth. Azure Land claims them as territory; Taihei is a faction-state on the southern isle.',
 		status: 'active',
 		statusLabel: 'Active',
 		marker: 'ALL DISTANCES MEASURED FROM HERE',
 		body: `## Overview
 
-Two identical islands at the center of the open ocean. Small hills, rich vegetation, and exotic species found nowhere on Earth. Azure Land claims the Twin Isles as territory; Taihei is a faction-state on the southern isle.
+Two identical islands at the center of the open ocean, shaped like an hourglass. The narrow waist connecting the two isles creates a strategic chokepoint and home to Mezzoluna Village. Small hills, rich vegetation, and exotic species found nowhere on Earth. Azure Land claims the Twin Isles as territory; Taihei is a faction-state on the southern isle.
 
 ## Geography & Location
 
-The Twin Isles sit at the center of Fablea Prime's ocean, serving as the reference point for all distances across the realm. Both islands have identical topographies with small hills and rich vegetation. The islands are home to exotic animals and plants found nowhere on Earth.
+The Twin Isles sit at the center of Fablea Prime's ocean, serving as the reference point for all distances across the realm. Viewed from above, the two islands form an hourglass shape—northern and southern landmasses connected by a narrow strait at the center. Both islands have identical topographies with small hills and rich vegetation. The islands are home to exotic animals and plants found nowhere on Earth.
+
+The narrow waist at the center of the hourglass is of particular strategic importance, hosting Mezzoluna Village as a neutral crossing point.
 
 ## Polities & Governance
 
@@ -733,6 +745,59 @@ NOT ON FILE
 ## Restrictions & Access
 
 ACCESS RESTRICTED. The Crimson Wasteland is a no-man's-land. Artifacts spawn for limited time windows. Entry is not advised without proper authorization and preparation.`
+	},
+	{
+		id: 'R-13',
+		title: 'Mezzoluna Village',
+		excerpt:
+			'A small neutral village nestled between Azure Land and Taihei on the Twin Isles, positioned at the narrow waist of the hourglass-shaped archipelago. Led by Wriggle Nightbug.',
+		status: 'active',
+		statusLabel: 'Active',
+		marker: 'AT THE WAIST OF TWIN ISLES / NEUTRAL GROUND',
+		body: `## Overview
+
+Mezzoluna Village is a small neutral settlement perched at the narrow waist of the hourglass-shaped Twin Isles. Its name means "half-moon" in Italian, symbolizing both its geographical position between Azure Land and Taihei, and its wish to remain in the gray area rather than siding with any party. The village serves as a neutral ground for diplomacy and trade between the two powers.
+
+## Geography & Location
+
+The Twin Isles themselves are shaped like an hourglass, with the northern and southern islands connected by a narrow strait at the center. Mezzoluna Village occupies this crucial waist position, making it a natural crossing point between the two halves of the archipelago. The village commands views of both Azure Land's northern shores and Taihei's southern territories.
+
+The location offers strategic importance while maintaining tranquility. Small hills surround the village, and the rich vegetation of the Twin Isles provides a lush backdrop. A gentle river flows through the village center, adding to its peaceful atmosphere.
+
+## Polities & Governance
+
+Mezzoluna Village maintains strict neutrality between Azure Land and Taihei. The village is self-governed under Wriggle Nightbug, who serves as the village chief. The settlement operates as a neutral zone where neither Azure Land nor Taihei exercises direct authority.
+
+Wriggle Nightbug leads with a diplomatic approach, ensuring the village remains a welcome haven for travelers, traders, and those seeking refuge from the political tensions between the two powers. The village maintains its own simple laws focused on peace and neutrality.
+
+## Economy & Currency
+
+The village thrives on neutral trade and as a waypoint for travelers crossing between Azure Land and Taihei. Both Azure Land Gold (AZL) and Taihei Quill (TQL) are accepted at market rate, reflecting the village's position between the two economies.
+
+Key economic activities include:
+- **Trade intermediary**: Goods from both sides pass through the village
+- **Hospitality**: Inns and taverns serve travelers
+- **Craft production**: Local artisans produce distinctive goods
+- **Diplomatic services**: Hosting neutral meetings and negotiations
+
+## Major Sites
+
+- **Moonwatch Plaza**: The village center, named for the half-moon theme. An open-air marketplace and gathering spot.
+- **The Half Crescent Inn**: Primary lodging for travelers, run by local proprietors.
+- **Crossing Harbor**: Small docks along the river where boats from both Azure Land and Taihei can dock.
+- **Wriggle's House**: The village chief's residence, also serving as the administrative center.
+
+## People & Notable Residents
+
+- **Wriggle Nightbug**: Village chief. Leads with diplomatic skill and works to maintain neutrality.
+- **Ochaco Uraraka**: Assistant to Wriggle, handles village administration and guest relations.
+- **Asuna Yuuki**: Guard captain responsible for village security.
+- **Marin Kitagawa**: Manages the market and trade negotiations.
+- **Mualani**: Oversees the inn and hospitality services.
+
+## Restrictions & Access
+
+No restrictions. Mezzoluna Village welcomes all travelers regardless of affiliation. Both Azure Land and Taihei citizens can enter freely. The village requests that visitors respect its neutrality and local customs.`
 	}
 ];
 
@@ -941,5 +1006,18 @@ export const navGroups: NavGroup[] = [
 			label: f.title,
 			anchor: `/#restricted-${slugify(f.title)}`
 		}))
+	},
+	{
+		key: 'characters',
+		sectionTitle: 'The Relationship Chart',
+		label: 'Characters',
+		href: '/characters/',
+		items: [
+			{ label: 'Relationship Map', anchor: '/characters/' },
+			...earthians.map((e) => ({
+				label: e.name,
+				anchor: `/characters/#char-${slugify(e.name)}`
+			}))
+		]
 	}
 ];
