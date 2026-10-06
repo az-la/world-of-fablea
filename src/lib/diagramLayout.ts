@@ -1,6 +1,6 @@
 // Deterministic cluster layout for the relationship chart. No randomness, no
 // runtime physics: the same data always renders the same chart, and the chart
-// is drawn at build time. Design box: 1152 x 800 units.
+// is drawn at build time. Design box: 2304 x 1600 units.
 import type { DiagramCharacter, Relationship } from '../data/characters';
 
 export interface Point {
@@ -21,7 +21,7 @@ export interface LayoutOptions {
 	overrides?: Record<string, Point>;
 }
 
-const DEFAULTS = { width: 1152, height: 800 };
+const DEFAULTS = { width: 2304, height: 1600 };
 
 // Node cells hold a 62px portrait plus a wrapped name below, so centers need
 // roughly this much clearance to keep name plates from touching.
@@ -37,7 +37,7 @@ export function computeDiagramLayout(
 	// Growth headroom: every ~10 figures past the original 28 adds a lane to
 	// the box (and grows the fan radii below), so the chart scales with the
 	// roster instead of cramming. At 28 figures the box is exactly the
-	// original 1152 x 800.
+	// original 2304 x 1600.
 	const figureCount = characters.filter((c) => c.kind === 'figure').length;
 	const lanes = Math.ceil(Math.max(0, figureCount - 28) / 10);
 	const W = base.width + lanes * 160;

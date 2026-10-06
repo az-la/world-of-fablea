@@ -34,16 +34,26 @@ interface FigureInput {
 	name: string;
 	title?: string;
 	faction?: string;
+	origin?: string;
 	excerpt: string;
 }
 
 const figures: FigureInput[] = [
 	// hmgfan's circle (Earthians.md, HOSC / HPIC sections)
 	{
+		id: 'imperia',
+		name: 'Imperia',
+		title: 'CEO and owner of inFlow',
+		faction: 'inFlow',
+		origin: 'Final Gear',
+		excerpt: 'Matriarch of inFlow. The main wife of hmgfan. Ultra-powerful.'
+	},
+	{
 		id: 'anna-nishikinomiya',
 		name: 'Anna Nishikinomiya',
 		title: 'CEO of Income Makers',
 		faction: 'Income Makers',
+		origin: 'Shimoneta',
 		excerpt: 'Head of Income Makers. Created HOSC as hmgfan\u2019s long reach, and recommended the raising of HPIC.'
 	},
 	{
@@ -51,6 +61,7 @@ const figures: FigureInput[] = [
 		name: 'Hiyori Shiina',
 		title: 'HOSC Leader',
 		faction: 'HOSC',
+		origin: 'Classroom of the Elite',
 		excerpt: 'Leads HOSC, the One-stop Service Club that acts as hmgfan\u2019s long hand while its members pass as ordinary citizens.'
 	},
 	{
@@ -58,43 +69,123 @@ const figures: FigureInput[] = [
 		name: 'Chiyo Shimada',
 		title: 'HPIC Leader',
 		faction: 'HPIC',
+		origin: 'Girls und Panzer',
 		excerpt: 'Leads HPIC, the Portfolio & Investment Club that invests across Fablea on hmgfan\u2019s behalf.'
 	},
 	{
 		id: 'herminia-bertolini',
 		name: 'Herminia Bertolini',
+		origin: 'Octopath Traveler: Champions of the Continent',
 		excerpt: 'Equipped Alisha Elliott with ultra-vast powers and brought Lisette Johanssen to First Ascension. Few other facts filed.'
+	},
+	// Dina Agustina's circle "The Equilibrium" (Earthians.md, second Earthian)
+	{
+		id: 'homelander',
+		name: 'Homelander',
+		origin: 'The Boys',
+		excerpt: 'Leader of The Equilibrium, Dina\u2019s mercenary and companion group.'
+	},
+	{
+		id: 'ellie-williams',
+		name: 'Ellie Williams',
+		origin: 'The Last of Us',
+		excerpt: 'Member of The Equilibrium, sub-unit "Without Debt".'
+	},
+	{
+		id: 'leia-organa',
+		name: 'Leia Organa',
+		origin: 'Star Wars',
+		excerpt: 'Member of The Equilibrium, sub-unit "Without Debt".'
+	},
+	{
+		id: 'takeo-masaki',
+		name: 'Takeo Masaki',
+		origin: 'Call of Duty Zombies',
+		excerpt: 'Member of The Equilibrium, sub-unit "Without Debt".'
+	},
+	{
+		id: 'farah-karim',
+		name: 'Farah Karim',
+		origin: 'Call of Duty: Modern Warfare (2019)',
+		excerpt: 'Member of The Equilibrium, sub-unit "Without Debt".'
+	},
+	{
+		id: 'coach',
+		name: 'Coach',
+		origin: 'Left 4 Dead 2',
+		excerpt: 'Member of The Equilibrium, sub-unit "Without Debt".'
+	},
+	{
+		id: 'ryoko-shinonome',
+		name: 'Ryoko Shinonome',
+		origin: '13 Sentinels: Aegis Rim',
+		excerpt: 'Member of The Equilibrium, sub-unit "Excellent Credit".'
+	},
+	{
+		id: 'kazuma-kiryu',
+		name: 'Kazuma Kiryu',
+		origin: 'Yakuza/Like a Dragon',
+		excerpt: 'Member of The Equilibrium, sub-unit "Excellent Credit".'
+	},
+	{
+		id: 'selvaria-bles',
+		name: 'Selvaria Bles',
+		origin: 'Valkyria Chronicles',
+		excerpt: 'Member of The Equilibrium, sub-unit "Excellent Credit".'
+	},
+	{
+		id: 'eren-yager',
+		name: 'Eren Yeager',
+		origin: 'Attack on Titan',
+		excerpt: 'Member of The Equilibrium, sub-unit "Excellent Credit".'
+	},
+	{
+		id: 'royal-arsenal',
+		name: 'Royal Arsenal',
+		origin: 'Last Origin',
+		excerpt: 'Member of The Equilibrium, sub-unit "Excellent Credit".'
+	},
+	{
+		id: 'kohta-hirano',
+		name: 'Kohta Hirano',
+		origin: 'Highschool of the Dead',
+		excerpt: 'Member of The Equilibrium, sub-unit "Excellent Credit".'
 	},
 	// Jenny Sinclair's circle (Earthians.md, fifth Earthian)
 	{
 		id: 'kumiko-oumae',
 		name: 'Kumiko Oumae',
+		origin: 'Sound! Euphonium',
 		excerpt: 'Loyal companion of Jenny Sinclair.'
 	},
 	{
 		id: 'yuno',
 		name: 'Yuno',
+		origin: 'Hidamari Sketch',
 		excerpt: 'One of Jenny Sinclair\u2019s good friends, among the Hidamari Sketch girls.'
 	},
 	{
 		id: 'miyako',
 		name: 'Miyako',
+		origin: 'Hidamari Sketch',
 		excerpt: 'One of Jenny Sinclair\u2019s good friends, among the Hidamari Sketch girls.'
 	},
 	{
 		id: 'isadora',
 		name: 'Isadora',
-		excerpt: 'Converted Jenny Sinclair\u2019s Earth fortune to AZL. Came with the white portal that brought Lee Ji-ho to Fablea.'
+		excerpt: 'Converted most of the Earthians\u2019s Earth fortune to AZL. Came with the white portal or ressurection that brought those from Earth to Fablea.'
 	},
 	// Akari Hoshino's circle (Earthians.md, sixth Earthian)
 	{
 		id: 'akiizumi-momiji',
 		name: 'Akiizumi Momiji',
+		origin: 'Blue Archive',
 		excerpt: 'Loyal companion of Akari Hoshino.'
 	},
 	{
 		id: 'hatsuzuki',
 		name: 'Hatsuzuki',
+		origin: 'Azur Lane',
 		excerpt: 'Loyal companion of Akari Hoshino.'
 	},
 	{
@@ -102,17 +193,20 @@ const figures: FigureInput[] = [
 		name: 'Black Maria',
 		title: 'CEO of Suichi Mining',
 		faction: 'Suichi Mining',
+		origin: 'One Piece',
 		excerpt: 'Runs Suichi Mining, and is Akari Hoshino\u2019s current boss on the Suichi Island to Twin Isles cargo lines.'
 	},
 	// Mamiya Matsumoto's circle (Earthians.md, seventh Earthian)
 	{
 		id: 'itsuki-nakano',
 		name: 'Itsuki Nakano',
+		origin: 'The Quintessential Quintuplets',
 		excerpt: 'Loyal companion of Mamiya Matsumoto.'
 	},
 	{
 		id: 'kiryuu-kikyou',
 		name: 'Kiryuu Kikyou',
+		origin: 'Blue Archive',
 		excerpt: 'Loyal companion of Mamiya Matsumoto.'
 	},
 	{
@@ -126,43 +220,51 @@ const figures: FigureInput[] = [
 	{
 		id: 'theoto-rikka',
 		name: 'Theoto Rikka',
+		origin: '86 -Eighty Six-',
 		excerpt: 'Loyal companion of Lisette Johanssen.'
 	},
 	{
 		id: 'konoe-mina',
 		name: 'Konoe Mina',
+		origin: 'Blue Archive',
 		excerpt: 'Loyal companion of Lisette Johanssen.'
 	},
 	{
 		id: 'fu-xuan',
 		name: 'Fu Xuan',
+		origin: 'Honkai Impact 3rd',
 		excerpt: 'Loyal companion of Lisette Johanssen.'
 	},
 	// Natalie Halsey-Taylor's circle (Earthians.md, ninth Earthian)
 	{
 		id: 'pamiat-merkuria',
 		name: 'Pamiat Merkuria',
+		origin: 'Azur Lane',
 		excerpt: 'Loyal companion of Natalie Halsey-Taylor.'
 	},
 	{
 		id: 'yuzuriha',
 		name: 'Yuzuriha',
+		origin: 'Under Night In-Birth',
 		excerpt: 'Loyal companion of Natalie Halsey-Taylor.'
 	},
 	// Lee Ji-ho's circle (Earthians.md, tenth Earthian)
 	{
 		id: 'liscia-elfrieden',
 		name: 'Liscia Elfrieden',
+		origin: 'How a Realist Hero Rebuilt the Kingdom',
 		excerpt: 'Helper to Lee Ji-ho and one of his loyal companions; the two can live in his spiritual house.'
 	},
 	{
 		id: 'sunohara-kokona',
 		name: 'Sunohara Kokona',
+		origin: 'Blue Archive',
 		excerpt: 'Helper to Lee Ji-ho and one of his loyal companions; the two can live in his spiritual house.'
 	},
 	{
 		id: 'osakabehime',
 		name: 'Osakabehime',
+		origin: 'Fate/Grand Order',
 		excerpt: 'One of Lee Ji-ho\u2019s loyal companions, trained to be his DevOps.'
 	},
 	{
@@ -176,17 +278,20 @@ const figures: FigureInput[] = [
 	{
 		id: 'ayumi-shinozaki',
 		name: 'Ayumi Shinozaki',
+		origin: 'Corpse Party',
 		excerpt: 'Loyal companion of Aika Yukimura.'
 	},
 	{
 		id: 'rean-schwarzer',
 		name: 'Rean Schwarzer',
+		origin: 'Trails of Cold Steel',
 		excerpt: 'Loyal companion of Aika Yukimura.'
 	},
 	// Katarina Petrenko's circle (Earthians.md, twelfth Earthian)
 	{
 		id: 'voroshilov',
 		name: 'Voroshilov',
+		origin: 'Azur Lane',
 		excerpt: 'Light cruiser shipgirl. Katarina Petrenko\u2019s one loyal companion.'
 	},
 	// Takechi Hironaka's circle (Earthians.md, fourth Earthian)
@@ -195,6 +300,7 @@ const figures: FigureInput[] = [
 		name: 'Hajime Tsukishima',
 		title: 'Team Icchi Leader',
 		faction: 'Team Icchi',
+		origin: 'Golden Kamuy',
 		excerpt: 'Leads Team Icchi (Team Unity), the helpers of Takechi Hironaka.'
 	},
 	// Sivudlerk (lore.ts, region R-? body: People & Notable Residents)
@@ -203,6 +309,7 @@ const figures: FigureInput[] = [
 		name: 'Roroa Amidonia',
 		title: 'CEO of Amidonia Enterprises',
 		faction: 'Amidonia Enterprises',
+		origin: 'How a Realist Hero Rebuilt the Kingdom',
 		excerpt: 'Owner and CEO of Amidonia Enterprises, based in Sivudlerk. The biggest business rival of Anna Nishikinomiya.'
 	}
 ];
@@ -221,6 +328,7 @@ export const characters: DiagramCharacter[] = [
 
 export const relationships: Relationship[] = [
 	// hmgfan's marriages, suitors, and divisions
+	{ from: 'imperia', to: 'hmgfan', label: 'wife of', reverse: 'husband of', kind: 'bond' },
 	{ from: 'alisha-elliott', to: 'hmgfan', label: 'wife of', reverse: 'husband of', kind: 'bond' },
 	{ from: 'akari-hoshino', to: 'hmgfan', label: 'wife of', reverse: 'husband of', kind: 'bond' },
 	{ from: 'dina-agustina', to: 'hmgfan', label: 'arrived with', kind: 'bond' },
@@ -232,6 +340,19 @@ export const relationships: Relationship[] = [
 	{ from: 'anna-nishikinomiya', to: 'hmgfan', label: 'created HOSC for', reverse: 'has HOSC created by', kind: 'division' },
 	{ from: 'hiyori-shiina', to: 'hmgfan', label: 'leads HOSC for', reverse: 'has HOSC led by', kind: 'division' },
 	{ from: 'chiyo-shimada', to: 'hmgfan', label: 'leads HPIC for', reverse: 'has HPIC led by', kind: 'division' },
+	// The Equilibrium
+	{ from: 'homelander', to: 'dina-agustina', label: 'leads The Equilibrium for', reverse: 'has as loyal companion', kind: 'division' },
+	{ from: 'ellie-williams', to: 'homelander', label: 'follower of', reverse: 'has as subordinate', kind: 'division' },
+	{ from: 'leia-organa', to: 'homelander', label: 'follower of', reverse: 'has as subordinate', kind: 'division' },
+	{ from: 'takeo-masaki', to: 'homelander', label: 'follower of', reverse: 'has as subordinate', kind: 'division' },
+	{ from: 'farah-karim', to: 'homelander', label: 'follower of', reverse: 'has as subordinate', kind: 'division' },
+	{ from: 'coach', to: 'homelander', label: 'follower of', reverse: 'has as subordinate', kind: 'division' },
+	{ from: 'ryoko-shinonome', to: 'homelander', label: 'follower of', reverse: 'has as subordinate', kind: 'division' },
+	{ from: 'kazuma-kiryu', to: 'homelander', label: 'follower of', reverse: 'has as subordinate', kind: 'division' },
+	{ from: 'selvaria-bles', to: 'homelander', label: 'follower of', reverse: 'has as subordinate', kind: 'division' },
+	{ from: 'eren-yager', to: 'homelander', label: 'follower of', reverse: 'has as subordinate', kind: 'division' },
+	{ from: 'royal-arsenal', to: 'homelander', label: 'follower of', reverse: 'has as subordinate', kind: 'division' },
+	{ from: 'kohta-hirano', to: 'homelander', label: 'follower of', reverse: 'has as subordinate', kind: 'division' },
 	// Ascension grants (Earthians.md, Alisha / Lisette / Mamiya entries)
 	{ from: 'herminia-bertolini', to: 'alisha-elliott', label: 'granted ultra-vast powers to', reverse: 'granted ultra-vast powers by', kind: 'bond' },
 	{ from: 'herminia-bertolini', to: 'lisette-johanssen', label: 'brought to First Ascension', reverse: 'brought to First Ascension by', kind: 'bond' },

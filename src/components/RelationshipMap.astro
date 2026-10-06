@@ -167,6 +167,7 @@ const edges = relationships.map((r) => {
 				</div>
 				<h3 class="relmap-panel-name" tabindex="-1"></h3>
 				<p class="relmap-panel-title"></p>
+				<p class="relmap-panel-origin"></p>
 				<p class="relmap-panel-excerpt"></p>
 				<p class="relmap-panel-conncount"></p>
 				<ul class="relmap-panel-conns"></ul>
@@ -213,6 +214,7 @@ const edges = relationships.map((r) => {
 			no?: string;
 			title?: string;
 			faction?: string;
+			origin?: string;
 			excerpt: string;
 		}
 		interface Conn {
@@ -250,6 +252,7 @@ const edges = relationships.map((r) => {
 		const metaEl = panel?.querySelector<HTMLElement>('.relmap-panel-meta');
 		const nameEl = panel?.querySelector<HTMLElement>('.relmap-panel-name');
 		const titleEl = panel?.querySelector<HTMLElement>('.relmap-panel-title');
+		const originEl = panel?.querySelector<HTMLElement>('.relmap-panel-origin');
 		const excerptEl = panel?.querySelector<HTMLElement>('.relmap-panel-excerpt');
 		const connCountEl = panel?.querySelector<HTMLElement>('.relmap-panel-conncount');
 		const connListEl = panel?.querySelector<HTMLElement>('.relmap-panel-conns');
@@ -479,7 +482,7 @@ const edges = relationships.map((r) => {
 		}
 
 		const fillPanel = (c: Char) => {
-			if (!metaEl || !nameEl || !titleEl || !excerptEl || !connCountEl) return;
+			if (!metaEl || !nameEl || !titleEl || !excerptEl || !connCountEl || !originEl) return;
 			const meta = [
 				c.kind === 'earthian' ? `Earthian / ${c.no ?? '??'}` : 'Figure',
 				c.faction
@@ -490,6 +493,8 @@ const edges = relationships.map((r) => {
 			nameEl.textContent = c.name;
 			titleEl.textContent = c.title ?? '';
 			titleEl.hidden = !c.title;
+			originEl.textContent = c.origin ?? '';
+			originEl.hidden = !c.origin;
 			excerptEl.textContent = c.excerpt;
 			const conns = data.connections[c.id] ?? [];
 			connCountEl.textContent = `Connections / ${conns.length}`;
@@ -918,8 +923,8 @@ const edges = relationships.map((r) => {
 	}
 	.relmap-no {
 		position: absolute;
-		top: -4px;
-		right: -8px;
+		top: 5px;
+		right: 20px;
 		padding: 0 4px;
 		font-family: var(--font-mono);
 		font-size: 8px;
@@ -1037,6 +1042,16 @@ const edges = relationships.map((r) => {
 		color: var(--color-accent-gold);
 	}
 	.relmap-panel-title[hidden] {
+		display: none;
+	}
+	.relmap-panel-origin {
+		padding: 0.75rem 1rem 0;
+		font-size: 0.8125rem;
+		font-style: italic;
+		line-height: 1.6;
+		color: var(--color-text-secondary);
+	}
+	.relmap-panel-origin[hidden] {
 		display: none;
 	}
 	.relmap-panel-excerpt {
