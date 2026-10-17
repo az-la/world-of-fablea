@@ -1,8 +1,329 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import ArchiveHeader from '../../components/ArchiveHeader.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import { dossiers, characters } from '../../data/characters';
+import { slugify } from '../../data/lore';
+
+// Generate static paths for every dossier.
+export function getStaticPaths() {
+	return dossiers.map((d) => ({
+		params: { slug: d.characterId },
+		props: { dossier: d }
+	}));
+}
+
+interface Props {
+	dossier: (typeof dossiers)[number];
+}
+
+const { dossier } = Astro.props;
+
+// Look up the DiagramCharacter for name/title/excerpt
+const char = characters.find((c) => c.id === dossier.characterId);
+const displayName = char?.name ?? dossier.sections.identity.legalName ?? dossier.fileTitle;
+const displayTitle = char?.title ?? dossier.sections.identity.title ?? '';
+const pageUrl = `${import.meta.env.BASE_URL}characters/${slugify(displayName)}`;
+
+// Section metadata for the file index
+const sections = [
+	{ id: 'identity', label: 'Identity' },
+	{ id: 'history', label: 'History' },
+	{ id: 'record', label: 'Record' },
+	{ id: 'incident', label: 'Incident' },
+	{ id: 'archive', label: 'Archive' },
+	{ id: 'associations', label: 'Associations' },
+	{ id: 'blackthorn', label: 'Blackthorn' },
+	{ id: 'final-note', label: 'Final Note' }
+];
 ---
 
 <Layout
-    title="Character Dossier — World of Fablea: Archival Database"
-    description="A character dossier from the World of Fablea: Archival Database.">
+	title={`${displayName} — World of Fablea: Archival Database`}
+	description={`${dossier.fileTitle}: ${dossier.accessLevel} file.`}
+>
+	<div class="container-archival pb-16 pt-28 md:pt-32">
+		<!-- Header: File ID / category / subject -->
+		<ArchiveHeader
+			archiveId={dossier.fileId}
+			category={dossier.accessLevel}
+			title={displayName}
+			subtitle={displayTitle}
+		/>
+
+		<!-- File index: numbered section anchors -->
+		<nav class="border-y border-border-subtle bg-bg-primary" aria-label="File index">
+			<div class="py-10">
+				<p class="font-mono text-xs tracking-[0.15em] text-text-secondary uppercase">
+					File index / {sections.length} sections
+				</p>
+				<ul class="mt-5 grid grid-cols-1 gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
+					{sections.map((s, i) => (
+						<li>
+							<a
+								href={`${pageUrl}#${s.id}`}
+								class="link-hover-underline flex min-h-[44px] items-center gap-3 font-mono text-xs tracking-[0.1em] text-text-secondary uppercase transition-colors duration-200 hover:text-accent-gold"
+							>
+								<span class="text-text-muted">{String(i + 1).padStart(2, '0')}</span>
+								{s.label}
+							</a>
+						</li>
+					))}
+				</ul>
+			</div>
+		</nav>
+
+		<!-- SECTION 01: Identity -->
+		<section id="identity" class="scroll-mt-24">
+			<div class="py-24 md:py-32">
+				<div class="flex flex-wrap items-center justify-between gap-4">
+					<p class="font-mono text-xs tracking-[0.15em] text-text-secondary uppercase">
+						File / {dossier.fileId} / Section 01
+					</p>
+					<StatusBadge label={dossier.status} variant={dossier.status} value={dossier.accessLevel} />
+				</div>
+				<h2 class="mt-4 font-display text-3xl leading-tight text-white md:text-4xl">
+					Identity
+				</h2>
+
+				{dossier.facility && (
+					<p class="mt-1 font-mono text-[0.65rem] tracking-[0.1em] text-accent-restricted uppercase">
+						Facility: {dossier.facility}
+					</p>
+				)}
+
+				{dossier.risk && (
+					<p class="mt-2 font-mono text-[0.65rem] tracking-[0.1em] text-accent-gold uppercase">
+						Risk level: {dossier.risk}
+					</p>
+				)}
+
+				<dl class="mt-8 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+					{Object.entries({
+						'Legal Name': dossier.sections.identity.legalName,
+						'Known Alias': dossier.sections.identity.alias,
+						'Title': dossier.sections.identity.title,
+						'Faction': dossier.sections.identity.faction,
+						'Age': dossier.sections.identity.age,
+						'Birth Date': dossier.sections.identity.birth,
+						'Family': dossier.sections.identity.family,
+						'Origin': dossier.sections.identity.origin
+					}).filter(([, v]) => v && v !== 'NOT ON FILE').map(([k, v]) => (
+						<div class="border-t border-border-subtle pt-2">
+							<dt class="font-mono text-[0.7rem] tracking-[0.15em] text-text-secondary uppercase">
+								{k}
+							</dt>
+							<dd class="mt-1 text-sm leading-relaxed text-text-primary md:text-base">
+								{v}
+							</dd>
+						</div>
+					))}
+				</dl>
+			</div>
+		</section>
+
+		<!-- SECTION 02: History -->
+		<section id="history" class="border-t border-border-subtle scroll-mt-24">
+			<div class="py-24 md:py-32">
+				<p class="font-mono text-xs tracking-[0.15em] text-text-secondary uppercase">
+					File / {dossier.fileId} / Section 02
+				</p>
+				<h2 class="mt-4 font-display text-3xl leading-tight text-white md:text-4xl">
+					History
+				</h2>
+				<div class="mt-8">
+					{dossier.sections.history.split('\n\n').map((para) => (
+						<p class="text-sm leading-relaxed text-text-secondary md:text-base">
+							{para}
+						</p>
+					))}
+				</div>
+			</div>
+		</section>
+
+		<!-- SECTION 03: Record -->
+		<section id="record" class="border-t border-border-subtle scroll-mt-24">
+			<div class="py-24 md:py-32">
+				<p class="font-mono text-xs tracking-[0.15em] text-text-secondary uppercase">
+					File / {dossier.fileId} / Section 03
+				</p>
+				<h2 class="mt-4 font-display text-3xl leading-tight text-white md:text-4xl">
+					Record
+				</h2>
+
+				{dossier.sections.record.length > 0 ? (
+					<div class="mt-8 space-y-6">
+						{dossier.sections.record.map((entry) => (
+							<div class="border-t border-white/15 pt-4 first:mt-0 first:border-0 first:pt-0">
+								<h3 class="font-display text-xl leading-snug text-accent-gold">
+									{entry.label}
+								</h3>
+								<p class="mt-1 text-sm leading-relaxed text-slate-300 md:text-base">
+									{entry.detail}
+								</p>
+							</div>
+						))}
+					</div>
+				) : (
+					<p class="mt-8 inline-block border border-dashed border-white/30 px-4 py-2 font-mono text-xs tracking-[0.15em] text-text-secondary uppercase">
+						NOT ON FILE
+					</p>
+				)}
+			</div>
+		</section>
+
+		<!-- SECTION 04: Incident -->
+		<section id="incident" class="border-t border-border-subtle scroll-mt-24">
+			<div class="py-24 md:py-32">
+				<p class="font-mono text-xs tracking-[0.15em] text-text-secondary uppercase">
+					File / {dossier.fileId} / Section 04
+				</p>
+				<h2 class="mt-4 font-display text-3xl leading-tight text-white md:text-4xl">
+					Incident
+				</h2>
+
+				{dossier.sections.incident.title !== 'NOT ON FILE' ? (
+					<div class="mt-8">
+						<h3 class="font-display text-2xl leading-snug text-accent-gold">
+							{dossier.sections.incident.title}
+						</h3>
+						<div class="mt-6">
+							{dossier.sections.incident.body.split('\n\n').map((para) => (
+								<p class="text-sm leading-relaxed text-text-secondary md:text-base">
+									{para}
+								</p>
+							))}
+						</div>
+					</div>
+				) : (
+					<div class="mt-8">
+						<h3 class="font-display text-2xl leading-snug text-text-secondary">
+							{dossier.sections.incident.title}
+						</h3>
+						<p class="mt-6 text-sm leading-relaxed text-text-secondary md:text-base">
+							{dossier.sections.incident.body}
+						</p>
+					</div>
+				)}
+			</div>
+		</section>
+
+		<!-- SECTION 05: Archive -->
+		<section id="archive" class="border-t border-border-subtle scroll-mt-24">
+			<div class="py-24 md:py-32">
+				<p class="font-mono text-xs tracking-[0.15em] text-text-secondary uppercase">
+					File / {dossier.fileId} / Section 05
+				</p>
+				<h2 class="mt-4 font-display text-3xl leading-tight text-white md:text-4xl">
+					Archive
+				</h2>
+				<div class="mt-8 text-sm leading-relaxed text-text-secondary md:text-base">
+					{dossier.sections.archive.split('\n\n').map((para) => (
+						<p class="mb-4">
+							{para}
+						</p>
+					))}
+					<span class="inline-block border border-dashed border-white/30 px-3 py-1 font-mono text-[0.65rem] tracking-[0.1em] text-text-muted uppercase">
+						PARTIALLY VERIFIED
+					</span>
+				</div>
+			</div>
+		</section>
+
+		<!-- SECTION 06: Associations -->
+		<section id="associations" class="border-t border-border-subtle scroll-mt-24">
+			<div class="py-24 md:py-32">
+				<p class="font-mono text-xs tracking-[0.15em] text-text-secondary uppercase">
+					File / {dossier.fileId} / Section 06
+				</p>
+				<h2 class="mt-4 font-display text-3xl leading-tight text-white md:text-4xl">
+					Associations
+				</h2>
+
+				{dossier.sections.associations.length > 0 ? (
+					<div class="mt-8 space-y-6">
+						{dossier.sections.associations.map((assoc) => (
+							<div class="border-t border-white/15 pt-4 first:mt-0 first:border-0 first:pt-0">
+								<div class="flex flex-wrap items-baseline justify-between gap-2">
+									<h3 class="font-display text-xl leading-snug text-accent-gold">
+										{assoc.role}
+									</h3>
+									{assoc.characterId && (
+										<a
+											href={`../${assoc.characterId}`}
+											class="link-hover-underline font-mono text-xs tracking-[0.1em] text-accent-azure uppercase transition-colors duration-200 hover:text-accent-gold"
+										>
+											Open dossier
+										</a>
+									)}
+								</div>
+								<p class="mt-1 text-sm leading-relaxed text-slate-300 md:text-base">
+									{assoc.name}: {assoc.description}
+								</p>
+							</div>
+						))}
+					</div>
+				) : (
+					<p class="mt-8 inline-block border border-dashed border-white/30 px-4 py-2 font-mono text-xs tracking-[0.15em] text-text-secondary uppercase">
+						NO ASSOCIATIONS FILED
+					</p>
+				)}
+			</div>
+		</section>
+
+		<!-- SECTION 07: Blackthorn -->
+		<section id="blackthorn" class="border-t border-border-subtle scroll-mt-24">
+			<div class="py-24 md:py-32">
+				<p class="font-mono text-xs tracking-[0.15em] text-text-secondary uppercase">
+					File / {dossier.fileId} / Section 07
+				</p>
+				<h2 class="mt-4 font-display text-3xl leading-tight text-white md:text-4xl">
+					Blackthorn
+				</h2>
+				<div class="mt-8 text-sm leading-relaxed text-text-secondary md:text-base">
+					{dossier.sections.blackthorn.split('\n\n').map((para) => (
+						<p class="mb-4">
+							{para}
+						</p>
+					))}
+				</div>
+			</div>
+		</section>
+
+		<!-- SECTION 08: Final Note -->
+		<section id="final-note" class="border-t border-border-subtle scroll-mt-24">
+			<div class="py-24 md:py-32">
+				<p class="font-mono text-xs tracking-[0.15em] text-text-secondary uppercase">
+					File / {dossier.fileId} / Section 08
+				</p>
+				<h2 class="mt-4 font-display text-3xl leading-tight text-white md:text-4xl">
+					Final Note
+				</h2>
+				<div class="mt-8 text-sm leading-relaxed text-text-secondary md:text-base">
+					{dossier.sections.finalNote.split('\n\n').map((para) => (
+						<p class="mb-4">
+							{para}
+						</p>
+					))}
+				</div>
+			</div>
+		</section>
+
+		<!-- Footer -->
+		<div class="border-t border-border-subtle bg-bg-primary">
+			<div class="container-archival py-14">
+				<div class="flex flex-wrap items-center justify-between gap-4">
+					<p class="font-mono text-xs tracking-[0.15em] text-text-secondary uppercase">
+						File / {dossier.fileId}
+					</p>
+					<a
+						href="./"
+						class="link-hover-underline font-mono text-xs tracking-[0.1em] text-accent-azure uppercase transition-colors duration-200 hover:text-accent-gold"
+					>
+						Back to Relationship Chart
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
 </Layout>

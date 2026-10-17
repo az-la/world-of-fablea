@@ -956,6 +956,58 @@ export function slugify(title: string): string {
 		.replace(/^-+|-+$/g, '');
 }
 
+// Character figures (companions) that accompany the 12 Earthians.
+// Kept as a flat lookup so the Characters nav dropdown does not import
+// characters.ts (which itself imports from lore.ts → avoids a circular dep).
+interface CharacterFigureNav {
+	name: string;
+	slug: string;
+}
+
+export const characterFigures: CharacterFigureNav[] = [
+	{ name: 'Imperia', slug: 'imperia' },
+	{ name: 'Anna Nishikinomiya', slug: 'anna-nishikinomiya' },
+	{ name: 'Hiyori Shiina', slug: 'hiyori-shiina' },
+	{ name: 'Chiyo Shimada', slug: 'chiyo-shimada' },
+	{ name: 'Herminia Bertolini', slug: 'herminia-bertolini' },
+	{ name: 'Homelander', slug: 'homelander' },
+	{ name: 'Ellie Williams', slug: 'ellie-williams' },
+	{ name: 'Leia Organa', slug: 'leia-organa' },
+	{ name: 'Takeo Masaki', slug: 'takeo-masaki' },
+	{ name: 'Farah Karim', slug: 'farah-karim' },
+	{ name: 'Coach', slug: 'coach' },
+	{ name: 'Ryoko Shinonome', slug: 'ryoko-shinonome' },
+	{ name: 'Kazuma Kiryu', slug: 'kazuma-kiryu' },
+	{ name: 'Selvaria Bles', slug: 'selvaria-bles' },
+	{ name: 'Eren Yeager', slug: 'eren-yager' },
+	{ name: 'Royal Arsenal', slug: 'royal-arsenal' },
+	{ name: 'Kohta Hirano', slug: 'kohta-hirano' },
+	{ name: 'Kumiko Oumae', slug: 'kumiko-oumae' },
+	{ name: 'Yuno', slug: 'yuno' },
+	{ name: 'Miyako', slug: 'miyako' },
+	{ name: 'Isadora', slug: 'isadora' },
+	{ name: 'Akiizumi Momiji', slug: 'akiizumi-momiji' },
+	{ name: 'Hatsuzuki', slug: 'hatsuzuki' },
+	{ name: 'Black Maria', slug: 'black-maria' },
+	{ name: 'Itsuki Nakano', slug: 'itsuki-nakano' },
+	{ name: 'Kiryuu Kikyou', slug: 'kiryuu-kikyou' },
+	{ name: 'Elizabeth Crowskin', slug: 'elizabeth-crowskin' },
+	{ name: 'Theoto Rikka', slug: 'theoto-rikka' },
+	{ name: 'Konoe Mina', slug: 'konoe-mina' },
+	{ name: 'Fu Xuan', slug: 'fu-xuan' },
+	{ name: 'Pamiat Merkuria', slug: 'pamiat-merkuria' },
+	{ name: 'Yuzuriha', slug: 'yuzuriha' },
+	{ name: 'Liscia Elfrieden', slug: 'liscia-elfrieden' },
+	{ name: 'Sunohara Kokona', slug: 'sunohara-kokona' },
+	{ name: 'Osakabehime', slug: 'osakabehime' },
+	{ name: 'Diane Cross', slug: 'diane-cross' },
+	{ name: 'Ayumi Shinozaki', slug: 'ayumi-shinozaki' },
+	{ name: 'Rean Schwarzer', slug: 'rean-schwarzer' },
+	{ name: 'Voroshilov', slug: 'voroshilov' },
+	{ name: 'Hajime Tsukishima', slug: 'hajime-tsukishima' },
+	{ name: 'Roroa Amidonia', slug: 'roroa-amidonia' }
+];
+
 export interface NavGroup {
 	key: string;
 	sectionTitle: string;
@@ -1009,14 +1061,20 @@ export const navGroups: NavGroup[] = [
 	},
 	{
 		key: 'characters',
-		sectionTitle: 'The Relationship Chart',
+		sectionTitle: 'The Character Archive',
 		label: 'Characters',
 		href: '/characters/',
 		items: [
 			{ label: 'Relationship Map', anchor: '/characters/' },
+			{ label: 'The Twelve Earthians', anchor: '' },
 			...earthians.map((e) => ({
 				label: e.name,
-				anchor: `/characters/#char-${slugify(e.name)}`
+				anchor: `/characters/${slugify(e.name)}`
+			})),
+			{ label: 'Figures & Companions', anchor: '' },
+			...characterFigures.map((f) => ({
+				label: f.name,
+				anchor: `/characters/${f.slug}`
 			}))
 		]
 	}
