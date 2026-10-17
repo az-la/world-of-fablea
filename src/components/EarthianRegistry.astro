@@ -1,8 +1,22 @@
 ---
+import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import ArchiveHeader from './ArchiveHeader.astro';
 import earthiansBanner from '../assets/banners/earthians.jpg';
 import { earthians, slugify } from '../data/lore';
+
+// Portraits: files named after slugified character IDs in src/assets/characters/.
+const portraitModules = import.meta.glob<{ default: ImageMetadata }>(
+	'../assets/characters/*.{jpg,jpeg,png,webp}',
+	{ eager: true }
+);
+const portraitFor = (id: string) => {
+	const entry = Object.entries(portraitModules).find(([path]) => {
+		const file = path.split('/').pop() ?? '';
+		return file.replace(/\.(jpg|jpeg|png|webp)$/, '') === id;
+	});
+	return entry?.[1].default;
+};
 ---
 
 <section id="earthians" class="border-b border-border-subtle" style="background-color: var(--color-bg-secondary);">
@@ -32,9 +46,28 @@ import { earthians, slugify } from '../data/lore';
 						id={`earthians-${slugify(person.name)}`}
 						class="group flex flex-col gap-2 border border-border-subtle bg-bg-primary p-4 transition-colors duration-200 hover:border-accent-gold"
 					>
-						<span class="font-mono text-[0.65rem] tracking-[0.1em] text-text-muted uppercase">
-							Earthian / {person.no}
-						</span>
+<div class="flex items-center gap-3">
+							{(() => {
+								const portrait = portraitFor(slugify(person.name));
+								return portrait ? (
+									<Image
+										src={portrait}
+										alt={person.name}
+										widths={[64, 128]}
+										sizes="64px"
+										quality={80}
+										class="h-16 w-16 rounded-full object-cover"
+									/>
+								) : (
+									<div class="flex h-16 w-16 items-center justify-center rounded-full bg-bg-secondary text-xs font-bold text-text-muted">
+										{person.no}
+									</div>
+								);
+							})()}
+							<span class="font-mono text-[0.65rem] tracking-[0.1em] text-text-muted uppercase">
+								Earthian / {person.no}
+							</span>
+						</div>
 						<h3 class="font-display text-base leading-snug text-text-primary transition-colors duration-200 group-hover:text-accent-gold">
 							{person.name}
 						</h3>
@@ -42,7 +75,7 @@ import { earthians, slugify } from '../data/lore';
 							{person.title}
 						</p>
 						<p class="text-xs leading-relaxed text-text-secondary">{person.excerpt}</p>
-					</article>
+						</article>
 				))
 			}
 		</div>

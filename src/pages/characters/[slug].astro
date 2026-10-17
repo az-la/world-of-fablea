@@ -1,9 +1,24 @@
 ---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import ArchiveHeader from '../../components/ArchiveHeader.astro';
 import StatusBadge from '../../components/StatusBadge.astro';
 import { dossiers, characters } from '../../data/characters';
 import { slugify } from '../../data/lore';
+
+// Portraits: files named after character IDs in src/assets/characters/.
+const portraitModules = import.meta.glob<{ default: ImageMetadata }>(
+	'../../assets/characters/*.{jpg,jpeg,png,webp}',
+	{ eager: true }
+);
+const portraitFor = (id: string) => {
+	const entry = Object.entries(portraitModules).find(([path]) => {
+		const file = path.split('/').pop() ?? '';
+		return file.replace(/\.(jpg|jpeg|png|webp)$/, '') === id;
+	});
+	return entry?.[1].default;
+};
 
 // Generate static paths for every dossier.
 export function getStaticPaths() {
@@ -92,13 +107,30 @@ const sections = [
 					</p>
 				)}
 
-				{dossier.risk && (
-					<p class="mt-2 font-mono text-[0.65rem] tracking-[0.1em] text-accent-gold uppercase">
-						Risk level: {dossier.risk}
-					</p>
-				)}
+{dossier.risk && (
+						<p class="mt-2 font-mono text-[0.65rem] tracking-[0.1em] text-accent-gold uppercase">
+							Risk level: {dossier.risk}
+						</p>
+					)}
 
-				<dl class="mt-8 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
+					{(() => {
+						const portrait = portraitFor(dossier.characterId);
+						if (!portrait) return null;
+						return (
+							<div class="mt-8 flex justify-center">
+								<Image
+									src={portrait}
+									alt={displayName}
+									widths={[96, 192]}
+									sizes="128px"
+									quality={80}
+									class="h-32 w-32 rounded-full object-cover"
+								/>
+							</div>
+						);
+					})()}
+
+					<dl class="mt-8 grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2">
 					{Object.entries({
 						'Legal Name': dossier.sections.identity.legalName,
 						'Known Alias': dossier.sections.identity.alias,

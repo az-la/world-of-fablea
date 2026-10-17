@@ -8,6 +8,8 @@ astro dev --background
 
 Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
 
+The base URL of this website is at http://localhost:4321/world-of-fablea/
+
 ## Documentation
 
 Full documentation: https://docs.astro.build

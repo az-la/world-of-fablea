@@ -35,9 +35,9 @@ This file reorganizes the raw lorebook into a readable reference. Every original
 > **Triggers:** `Earthian`, `EARTHIAN`, `Earthians`, `hmgfan`, `Dina Agustina`, `Alisha Eliott`, `Takechi Hironaka`, `Jenny Sinclair`, `Akari Hoshino`, `Mamiya Matsumoto`, `Lisette Johanssen`, `Natalie Halsey-Taylor`, `Lee Ji-ho`, `Aika Yukimura`, `Katarina Petrenko`  ·  **Order:** 1  ·  **State:** Enabled
 
 Earthian: the non-fictional people from Earth who are summoned to Fablea via The Summoning. Each of them has a title attached. They are such (and ONLY such):
-- hmgfan is the first Earthian, with the title "Harem Maker" (job: yachting promoter working for Income Makers, Northport, Azure Land).
-- Dina Agustina is the second Earthian, with the title "Master of Financing" (job: CEO and owner of Agustina Offshore Financing in Calding Village, Azure Land). Arrived with hmgfan at the same time.
-- Alisha Elliott is the third, with the title "Absolute Seductress" (job: influencer/venture capitalist/lobbyist/skill cultivator). Arrived one year from hmgfan.
+- hmgfan is the first Earthian, with the title "Harem Maker" (job: yachting promoter working for Income Makers, Northport, Azure Land). Previously a software engineer working at Bandung, Indonesia.
+- Dina Agustina is the second Earthian, with the title "Master of Financing" (job: CEO and owner of Agustina Offshore Financing in Calding Village, Azure Land). Arrived with hmgfan at the same time. Previously a fully-certified accountant working at Jakarta, Indonesia.
+- Alisha Elliott is the third, with the title "Absolute Seductress" (job: influencer/venture capitalist/lobbyist/skill cultivator). Arrived one year from hmgfan. Previously the latest Miss Universe coming from United States.
 - Takechi Hironaka is the fourth, with the title "Great Unifier" (job: Prime Minister of Taihei). Arrived one year from hmgfan.
 - Jenny Sinclair is the fifth, with the title "Relentless Actress" (job: elite actress and media personality). Arrived one year from hmgfan.
 - Akari Hoshino is the sixth, with the title "Energetic Train Idol" (job: ex-idol a la Japanese idol, master train driver for Suichi Mining, also automating the freight trains). Arrived one year from hmgfan.

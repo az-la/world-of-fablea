@@ -499,10 +499,14 @@ export const dossiers: CharacterDossier[] = [
         "age": "Unknown",
         "birth": "Unverified",
         "family": "No verified blood relation.",
-        "origin": "Summoned from Earth via The Summoning (Day 0, First Arrival)."
+        "origin": "Ordinary web programmer at Pemkot Solo, Indonesia. Summoned from Earth during sleep when his life reached its lowest point (Day 0, First Arrival)."
       },
-      "history": "hmgfan is the first Earthian summoned to Fablea, titled Harem Maker. He arrived alone in Northport, Azure Land, and built an informal empire of romantic and business entanglements.",
+      "history": "hmgfan was an ordinary web programmer at Pemkot Solo, Indonesia. When his life reached its lowest point, he was summoned in his sleep. As the first Earthian summoned to Fablea, titled Harem Maker, he arrived alone in Northport, Azure Land, and built an informal empire of romantic and business entanglements.",
       "record": [
+        {
+          "label": "PRE-SUMMONING",
+          "detail": "Ordinary web programmer at Pemkot Solo, Indonesia. Life reached its lowest point; summoned in his sleep."
+        },
         {
           "label": "SUMMONING",
           "detail": "First Earthian. Arrived Day 0 at Northport, Azure Land."
@@ -524,7 +528,7 @@ export const dossiers: CharacterDossier[] = [
         "title": "The University Incident",
         "body": "An individual identifying as Voile attempted to seize control of Vesper University during a national congress. The operation was interrupted; the subject was captured."
       },
-      "archive": "No verified birth record. No childhood documentation. No pre-summoning financial trail.",
+      "archive": "hmgfan was an ordinary web programmer at Pemkot Solo, Indonesia. His life reached a low point, and he was summoned in his sleep. No verified birth record exists prior to arrival.",
       "associations": [
         {
           "role": "Wife of",
@@ -618,10 +622,14 @@ export const dossiers: CharacterDossier[] = [
         "age": "Mid-twenties",
         "birth": "Unverified",
         "family": "No verified record",
-        "origin": "Summoned alongside hmgfan (Day 0, simultaneous arrival)."
+        "origin": "Accountant at Deloitte in Jakarta, Indonesia. Summoned in her sleep alongside hmgfan during simultaneous arrival (Day 0)."
       },
-      "history": "Dina Agustina, the second Earthian, arrived simultaneously with hmgfan. Her mundane accounting skills manifested as supernatural abilities: infinite calculation power, mind-reading, vast energy. She leads The Equilibrium mercenary group.",
+      "history": "Dina Agustina was an accountant at Deloitte in Jakarta, Indonesia. When her life reached its lowest point, she was summoned in her sleep alongside hmgfan (second Earthian, simultaneous arrival). Her mundane accounting skills manifested as supernatural abilities: infinite calculation power, mind-reading, vast energy. She leads The Equilibrium mercenary group.",
       "record": [
+        {
+          "label": "PRE-SUMMONING",
+          "detail": "Accountant at Deloitte in Jakarta, Indonesia. Summoned in her sleep alongside hmgfan during simultaneous arrival (Day 0)."
+        },
         {
           "label": "THE EQUILIBRIUM",
           "detail": "Mercenary group leader. Two sub-units: Without Debt and Excellent Credit."
@@ -639,7 +647,7 @@ export const dossiers: CharacterDossier[] = [
         "title": "The Equilibrium Formation",
         "body": "Prior to Dina's arrival, Homelander led The Equilibrium. Upon her summoning, she asserted leadership, reorganizing into two sub-units."
       },
-      "archive": "Dina's life before the Summoning is entirely unverified.",
+      "archive": "Dina was an accountant at Deloitte in Jakarta, Indonesia. She was summoned in her sleep alongside hmgfan during simultaneous arrival (Day 0). Her mundane accounting skills immediately manifested as supernatural abilities.",
       "associations": [
         {
           "role": "Arrived with",
@@ -739,10 +747,14 @@ export const dossiers: CharacterDossier[] = [
         "age": "Unknown",
         "birth": "Unverified",
         "family": "No verified record",
-        "origin": "Summoned one year after hmgfan. Previously richest in Fablea."
+        "origin": "Ex-Miss Universe from Tampa, Florida, US, and the richest woman on Earth. A scandal struck and she fell from grace; a portal opened when she was depressed, summoned one year after hmgfan. Third Earthian."
       },
-      "history": "Alisha Elliott, titled Absolute Seductress, is the third Earthian. She arrived one year after hmgfan and became the wealthiest person in Fablea (AZL 234 billion). Her wealth funded A.f.H. (All for Him), a covert ops group.",
+      "history": "Alisha Elliott, titled Absolute Seductress, is the third Earthian. A former Miss Universe from Tampa, Florida, US, she was once the richest woman on Earth. A scandal struck and she fell from grace; a portal opened when she was depressed, arriving one year after hmgfan. Once in Fablea, she became the wealthiest person in Fablea (AZL 234 billion). Her wealth funded A.f.H. (All for Him), a covert ops group.",
       "record": [
+        {
+          "label": "PRE-SUMMONING",
+          "detail": "Ex-Miss Universe from Tampa, Florida, US. Richest woman on Earth. A scandal struck and she fell from grace; a portal opened when she was depressed."
+        },
         {
           "label": "A.f.H.",
           "detail": "Leader of All for Him. Covert ops group."
@@ -764,7 +776,7 @@ export const dossiers: CharacterDossier[] = [
         "title": "First Ascension",
         "body": "Herminia Bertolini equipped Alisha with ultra-vast powers. Alisha then granted First Ascension to Mamiya Matsumoto."
       },
-      "archive": "Alisha's life before the Summoning is entirely unverified.",
+      "archive": "Alisha Elliott was a former Miss Universe from Tampa, Florida, US, and the richest woman on Earth. A scandal struck and she fell from grace; a portal opened when she was depressed, summoning her to Fablea one year after hmgfan.",
       "associations": [
         {
           "role": "Wife of",
@@ -810,10 +822,14 @@ export const dossiers: CharacterDossier[] = [
         "age": "Unknown",
         "birth": "Unverified",
         "family": "No verified record",
-        "origin": "Summoned one year after hmgfan. Fourth Earthian."
+        "origin": "Prime Minister of Japan from Hino, Tokyo under the Centrist Reform Alliance. After reforming the Japanese government (arresting corrupt officials, law reforms, mending relationships with China and Korea a la German post-WWII), he was falsely accused of embezzlement and collusion with foreign powers. Publicly disgraced, impeached, imprisoned, and died under mysterious circumstances. Summoned one year after hmgfan. Fourth Earthian."
       },
-      "history": "Takechi Hironaka, titled Great Unifier, is the fourth Earthian and Prime Minister of Taihei. He resolved the conflict between Omi Alliance and Mankai-no-Wa. His helpers form Team Icchi.",
+      "history": "Takechi Hironaka, titled Great Unifier, is the fourth Earthian and Prime Minister of Taihei. He was formerly the Prime Minister of Japan from Hino, Tokyo under the Centrist Reform Alliance, having reformed everything about the Japanese government—including arresting corrupt officials, law reforms, massive relationship mending and compensations to China and Korea a la German post-WWII. The old powers (LDP and zaibatsus) and far-right figures hated him; he was falsely accused of embezzling national funds and colluding with foreign powers, publicly disgraced, impeached, and imprisoned. While awaiting trial, he died under mysterious circumstances—an apparent suicide, though many believed he was assassinated. Summoned one year after hmgfan, he resolved the conflict between Omi Alliance and Mankai-no-Wa. His helpers form Team Icchi.",
       "record": [
+        {
+          "label": "PRE-SUMMONING",
+          "detail": "Prime Minister of Japan from Hino, Tokyo under the Centrist Reform Alliance. Reformed the Japanese government—arresting corrupt officials, law reforms, relationship mending, and compensations to China and Korea (a la German post-WWII). Falsely accused of embezzlement and collusion, impeached, imprisoned, died under mysterious circumstances."
+        },
         {
           "label": "Prime Ministership",
           "detail": "Leader of Taihei. Unified eastern and western factions."
@@ -835,7 +851,7 @@ export const dossiers: CharacterDossier[] = [
         "title": "The Unification of Taihei",
         "body": "Upon Takechi's arrival, the conflict between Omi Alliance and Mankai-no-Wa was resolved. He became Prime Minister of the reorganized Taihei state."
       },
-      "archive": "Takechi's life before the Summoning is entirely unverified.",
+      "archive": "Takechi Hironaka was the Prime Minister of Japan from Hino, Tokyo under the Centrist Reform Alliance. He reformed the Japanese government comprehensively—arresting corrupt officials, enacting law reforms, mending relationships with China and Korea with post-WWII German-style compensations. The old powers (LDP and zaibatsus) and far-right figures opposed him. He was falsely accused of embezzling national funds and colluding with foreign powers, publicly disgraced, impeached, and imprisoned. While awaiting trial, he died under mysterious circumstances—an apparent suicide, though many believed he was assassinated.",
       "associations": [
         {
           "role": "Summoned alongside",
@@ -881,10 +897,14 @@ export const dossiers: CharacterDossier[] = [
         "age": "Mid-twenties",
         "birth": "Unverified",
         "family": "No verified record",
-        "origin": "Summoned one year after hmgfan. Fifth Earthian. Elite actress."
+        "origin": "British actress at the peak of her career. Her acting partner in a blockbuster film made a scandal; though she had no involvement, her career took a nosedive. Summoned in her sleep with lethargy one year after hmgfan. Fifth Earthian."
       },
-      "history": "Jenny Sinclair, titled Relentless Actress, is the fifth Earthian. She arrived one year after hmgfan, summoned concurrently with Takechi Hironaka. She is an elite actress and media personality. She resides aboard the Yume gigayacht liner in Apt. 26, shared with Kumiko Oumae, Yuno, and Miyako.",
+      "history": "Jenny Sinclair, titled Relentless Actress, is the fifth Earthian. A British actress at the peak of her career, her downfall came when her acting partner in a blockbuster film made a scandal. Though she had no involvement, Jenny was impacted, and her career took a nosedive. Summoned in her sleep with lethargy one year after hmgfan (concurrently with Takechi Hironaka), she is an elite actress and media personality. She resides aboard the Yume gigayacht liner in Apt. 26, shared with Kumiko Oumae, Yuno, and Miyako.",
       "record": [
+        {
+          "label": "PRE-SUMMONING",
+          "detail": "British actress at the peak of her career. Her acting partner in a blockbuster film made a scandal; though she had no involvement, her career took a nosedive. Summoned in her sleep with lethargy."
+        },
         {
           "label": "Media career",
           "detail": "Elite actress and media personality."
@@ -898,7 +918,7 @@ export const dossiers: CharacterDossier[] = [
         "title": "Concurrent Arrival",
         "body": "Jenny arrived simultaneously with Takechi Hironaka, one year after hmgfan."
       },
-      "archive": "Jenny's life before the Summoning is entirely unverified.",
+      "archive": "Jenny was a British actress at the peak of her career. Her acting partner in a blockbuster film made a scandal; though she had no involvement, Jenny was impacted, and her career took a nosedive. She was summoned in her sleep with lethargy one year after hmgfan.",
       "associations": [
         {
           "role": "Summoned alongside",
@@ -938,7 +958,7 @@ export const dossiers: CharacterDossier[] = [
         }
       ],
       "blackthorn": "Jenny operates as a media personality aboard the Yume gigayacht liner.",
-      "finalNote": "No verified explanation for Jenny's pre-summoning acting career."
+      "finalNote": "Jenny was a British actress at the peak of her career before being impacted by a scandal involving her acting partner. Her pre-summoning fame was well-documented but ultimately unraveled."
     }
   },
   {
@@ -956,10 +976,14 @@ export const dossiers: CharacterDossier[] = [
         "age": "Unknown",
         "birth": "Unverified",
         "family": "No verified record",
-        "origin": "Summoned one year after hmgfan. Sixth Earthian. Ex-idol, master train driver."
+        "origin": "Influential Japanese idol whose group disbanded and whose solo career never took off. A train otaku doing small gigs at train otaku-oriented cafes across Japan. Arrived on Fablea via a portal, inside her flying 2TE116. Summoned one year after hmgfan. Sixth Earthian."
       },
-      "history": "Akari Hoshino, titled Energetic Train Idol, is the sixth Earthian. She arrived one year after hmgfan and took up residence on Suichi Island, serving as master train driver for Suichi Mining and automating the freight trains. Her current boss is Black Maria, CEO of Suichi Mining.",
+      "history": "Akari Hoshino, titled Energetic Train Idol, is the sixth Earthian. She was formerly an influential Japanese idol whose group disbanded and whose solo career never took off as expected. A train otaku, she did small gigs at train otaku-oriented cafes across Japan before arriving on Fablea via a portal, inside her flying 2TE116. She took up residence on Suichi Island, serving as master train driver for Suichi Mining and automating the freight trains. Her current boss is Black Maria, CEO of Suichi Mining.",
       "record": [
+        {
+          "label": "PRE-SUMMONING",
+          "detail": "Influential Japanese idol whose group disbanded and solo career never took off. Train otaku doing small gigs at train otaku-oriented cafes across Japan. Arrived on Fablea via a portal inside her flying 2TE116."
+        },
         {
           "label": "Suichi Mining",
           "detail": "Master train driver. Automating freight trains."
@@ -977,7 +1001,7 @@ export const dossiers: CharacterDossier[] = [
         "title": "Second Ascension at Suichi",
         "body": "Akari received her Second Ascension through the Ascender device, conducted jointly with Sovetsky Soyuz on Suichi Island."
       },
-      "archive": "Akari's life before the Summoning is entirely unverified.",
+      "archive": "Akari was an influential Japanese idol whose group disbanded and whose solo career never took off as expected. A train otaku, she did small gigs at train otaku-oriented cafes across Japan. She arrived on Fablea via a portal inside her flying 2TE116.",
       "associations": [
         {
           "role": "Wife of",
@@ -1029,10 +1053,14 @@ export const dossiers: CharacterDossier[] = [
         "age": "Unknown",
         "birth": "Unverified",
         "family": "No verified record",
-        "origin": "Summoned one year after hmgfan. Seventh Earthian. President of Argent Peaks."
+        "origin": "Oligarch based in Nishi-ku, Osaka, Japan, running three shell companies and partnering with corporate raiders. She crushed unions efficiently. A rival oligarch attempted to assassinate her, and a portal to Fablea opened. Summoned one year after hmgfan. Seventh Earthian."
       },
-      "history": "Mamiya Matsumoto, titled Femme Fatale Oligarch, is the seventh Earthian and President of Argent Peaks. She overthrew Queen Elizabeth Crowskin and seized control. She owns the yacht Silent Verdict and received First Ascension from Alisha Elliott.",
+      "history": "Mamiya Matsumoto, titled Femme Fatale Oligarch, is the seventh Earthian and President of Argent Peaks. She was an oligarch based in Nishi-ku, Osaka, Japan, running three shell companies and partnering with corporate raiders to crush unions efficiently. A rival oligarch attempted to assassinate her, and a portal to Fablea opened. Summoned one year after hmgfan, she overthrew Queen Elizabeth Crowskin and seized control. She owns the yacht Silent Verdict and received First Ascension from Alisha Elliott.",
       "record": [
+        {
+          "label": "PRE-SUMMONING",
+          "detail": "Oligarch based in Nishi-ku, Osaka, Japan, running three shell companies and partnering with corporate raiders. Crushed unions efficiently. A rival oligarch attempted to assassinate her, and a portal to Fablea opened."
+        },
         {
           "label": "Presidency",
           "detail": "President of Argent Peaks. Overthrew Queen Elizabeth Crowskin."
@@ -1054,7 +1082,7 @@ export const dossiers: CharacterDossier[] = [
         "title": "The Fall of Argent Peaks",
         "body": "Mamiya overthrew Queen Elizabeth Crowskin, taking control of Argent Peaks. Alisha Elliott granted her First Ascension, instrumental in the coup. Mamiya then passed the power to Elizabeth Crowley, the True Soul of Silent Verdict."
       },
-      "archive": "Mamiya's life before the Summoning is entirely unverified.",
+      "archive": "Mamiya was an oligarch based in Nishi-ku, Osaka, Japan, running three shell companies and partnering with corporate raiders. She crushed unions efficiently. A rival oligarch attempted to assassinate her, and a portal to Fablea opened, pulling her through.",
       "associations": [
         {
           "role": "Wife of",
@@ -1106,10 +1134,14 @@ export const dossiers: CharacterDossier[] = [
         "age": "Unknown",
         "birth": "Unverified",
         "family": "No verified record",
-        "origin": "Summoned one year after hmgfan. Eighth Earthian. CEO of Wraiting Inc."
+        "origin": "CEO of Wraiting Inc. (based on US' Silicon Valley). Got a huge scandal when she was in Vietnam; her company Wraiting Inc. got crashed. She was pulled via a portal. Summoned one year after hmgfan. Eighth Earthian."
       },
-      "history": "Lisette Johanssen, titled Digital Master, is the eighth Earthian and CEO of Wraiting Inc. She operates the flat-profiled explorer superyacht Cosmos, capable of icebreaking and equipped with loyal robots. She received First Ascension from Herminia Bertolini.",
+      "history": "Lisette Johanssen, titled Digital Master, is the eighth Earthian and CEO of Wraiting Inc. She was based in Silicon Valley, US, but got a huge scandal when she was in Vietnam; her company Wraiting Inc. got crashed, and she was pulled via a portal. Summoned one year after hmgfan, she operates the flat-profiled explorer superyacht Cosmos, capable of icebreaking and equipped with loyal robots. She received First Ascension from Herminia Bertolini.",
       "record": [
+        {
+          "label": "PRE-SUMMONING",
+          "detail": "CEO of Wraiting Inc. (based on Silicon Valley, US). Got a huge scandal when in Vietnam; her company Wraiting Inc. got crashed, and she was pulled via a portal."
+        },
         {
           "label": "Wraiting Inc.",
           "detail": "CEO and owner. Digital solutions enterprise."
@@ -1127,7 +1159,7 @@ export const dossiers: CharacterDossier[] = [
         "title": "First Ascension via Herminia",
         "body": "Lisette was brought to First Ascension by Herminia Bertolini through direct power transfer, not via the Ascender device. She has Deck Zero access via Yamris."
       },
-      "archive": "Lisette's life before the Summoning is entirely unverified.",
+      "archive": "Lisette was the CEO of Wraiting Inc. (based on Silicon Valley, US). She got a huge scandal when she was in Vietnam; her company Wraiting Inc. got crashed, and she was pulled via a portal to Fablea.",
       "associations": [
         {
           "role": "Wife of",
@@ -1179,10 +1211,14 @@ export const dossiers: CharacterDossier[] = [
         "age": "Unknown",
         "birth": "Unverified",
         "family": "No verified record",
-        "origin": "Summoned one year, two months after hmgfan. Ninth Earthian. CEO of HT Logistics."
+        "origin": "CEO of HT Logistics at New York, United States. Almost got assassinated before a portal to Fablea opened in front of her. Summoned one year, two months after hmgfan. Ninth Earthian."
       },
-      "history": "Natalie Halsey-Taylor, titled Logistics Queen, is the ninth Earthian. She arrived one year and two months after hmgfan and operates HT Logistics. She owns the superyacht Silent Dagger, whose True Soul is Pamiat Merkuria, a light cruiser shipgirl from Azur Lane. With Pamiat aboard, the yacht cruises without seasickness.\n\nShe is devoted to hmgfan and commands the HT Logistics fleet.",
+      "history": "Natalie Halsey-Taylor, titled Logistics Queen, is the ninth Earthian. She was the CEO of HT Logistics at New York, United States, where she almost got assassinated before a portal to Fablea opened in front of her. She arrived one year and two months after hmgfan and operates HT Logistics. She owns the superyacht Silent Dagger, whose True Soul is Pamiat Merkuria, a light cruiser shipgirl from Azur Lane. With Pamiat aboard, the yacht cruises without seasickness.\n\nShe is devoted to hmgfan and commands the HT Logistics fleet.",
       "record": [
+        {
+          "label": "PRE-SUMMONING",
+          "detail": "CEO of HT Logistics at New York, United States. Almost got assassinated before a portal to Fablea opened in front of her."
+        },
         {
           "label": "HT Logistics",
           "detail": "CEO and owner. Logistics and transportation enterprise."
@@ -1200,7 +1236,7 @@ export const dossiers: CharacterDossier[] = [
         "title": "Silent Dagger Commission",
         "body": "Natalie commissioned the Silent Dagger superyacht, based on Roman Abramovich's Venus design. The yacht's True Soul, Pamiat Merkuria, ensures smooth cruising without seasickness for all aboard."
       },
-      "archive": "Natalie's life before the Summoning is entirely unverified. Her expertise in logistics emerged immediately upon arrival.",
+      "archive": "Natalie was the CEO of HT Logistics at New York, United States. She was almost assassinated before a portal to Fablea opened in front of her, pulling her through one year and two months after hmgfan.",
       "associations": [
         {
           "role": "Devoted to",
@@ -1240,10 +1276,14 @@ export const dossiers: CharacterDossier[] = [
         "age": "Unknown",
         "birth": "Unverified",
         "family": "No verified record",
-        "origin": "Summoned one year, two months after hmgfan. Tenth Earthian. Senior fullstack programmer."
+        "origin": "Fullstack programmer working at Seoul, South Korea, employed at a chaebol as a senior fullstack programmer. The work conditions were toxic, full of gapjil. He quit and became depressive, always lonely in his room in his parents' house. His parents became missing, worsening his condition. Summoned one year, two months after hmgfan. Tenth Earthian."
       },
-      "history": "Lee Ji-ho, titled Thorough Fullstacker, is the tenth Earthian. He arrived one year and two months after hmgfan and works as a senior fullstack programmer. He is one of the Earthians whose fortune was converted to AZL by Isadora, who came and comforted him during the portal transition.\n\nHis spiritual house can accommodate multiple companions. His loyal companions include Liscia Elfrieden, Sunohara Kokona, Osakabehime, and Diane Cross.",
+      "history": "Lee Ji-ho, titled Thorough Fullstacker, is the tenth Earthian. He was a fullstack programmer working at Seoul, South Korea, employed at a chaebol as a senior fullstack programmer. The work conditions were toxic, full of gapjil. He quit and became depressive, always lonely in his room in his parents' house. His parents became missing, worsening his condition. He arrived one year and two months after hmgfan and continues as a senior fullstack programmer. He is one of the Earthians whose fortune was converted to AZL by Isadora, who came and comforted him during the portal transition.\n\nHis spiritual house can accommodate multiple companions. His loyal companions include Liscia Elfrieden, Sunohara Kokona, Osakabehime, and Diane Cross.",
       "record": [
+        {
+          "label": "PRE-SUMMONING",
+          "detail": "Fullstack programmer working at Seoul, South Korea, employed at a chaebol as a senior fullstack programmer. Work conditions were toxic, full of gapjil. Quit and became depressive, always lonely in his room in his parents' house. Parents became missing."
+        },
         {
           "label": "Programming",
           "detail": "Senior fullstack programmer. Self-employed."
@@ -1261,7 +1301,7 @@ export const dossiers: CharacterDossier[] = [
         "title": "The Portal Transition",
         "body": "Isadora came and comforted Lee Ji-ho during his transition through the summoning portal. His Earth fortune was converted to AZL currency for use in Fablea."
       },
-      "archive": "Lee Ji-ho's life before the Summoning is entirely unverified.",
+      "archive": "Lee Ji-ho was a fullstack programmer working at Seoul, South Korea, employed at a chaebol as a senior fullstack programmer. The work conditions were toxic, full of gapjil. He quit and became depressive, always lonely in his room in his parents' house. His parents became missing, worsening his condition further.",
       "associations": [
         {
           "role": "Arrived with",
@@ -1313,10 +1353,14 @@ export const dossiers: CharacterDossier[] = [
         "age": "Unknown",
         "birth": "Unverified",
         "family": "No verified record",
-        "origin": "Summoned one year, three months after hmgfan. Eleventh Earthian. Influencer and celebrity."
+        "origin": "Rising influencer from Saitama Prefecture, Japan, and the fourth richest woman on Earth. Hit by Bunshun cannon with a fabricated scandal; despite denying hard, her reputation tanked. She escaped to her parents' house where a portal was opened, and her parents ordered her to go to the portal. Summoned one year, three months after hmgfan. Eleventh Earthian."
       },
-      "history": "Aika Yukimura, titled Master Influencer, is the eleventh Earthian. She arrived one year and three months after hmgfan and works as an influencer and celebrity. Her companions are Ayumi Shinozaki and Rean Schwarzer.",
+      "history": "Aika Yukimura, titled Master Influencer, is the eleventh Earthian. She was a rising influencer from Saitama Prefecture, Japan, and the fourth richest woman on Earth. She was hit by Bunshun cannon with a fabricated scandal; despite denying hard, her reputation tanked so hard. She escaped to her parents' house where a portal was opened, and her parents ordered her to go to the portal. She arrived one year and three months after hmgfan and works as an influencer and celebrity. Her companions are Ayumi Shinozaki and Rean Schwarzer.",
       "record": [
+        {
+          "label": "PRE-SUMMONING",
+          "detail": "Rising influencer from Saitama Prefecture, Japan, fourth richest woman on Earth. Hit by Bunshun cannon with a fabricated scandal; reputation tanked despite hard denial. Escaped to parents' house; parents ordered her to go to the portal."
+        },
         {
           "label": "Influencer career",
           "detail": "Celebrity influencer with significant social media presence."
@@ -1330,7 +1374,7 @@ export const dossiers: CharacterDossier[] = [
         "title": "NOT ON FILE",
         "body": "No major incident documented."
       },
-      "archive": "Aika's life before the Summoning is entirely unverified.",
+      "archive": "Aika was a rising influencer from Saitama Prefecture, Japan, and the fourth richest woman on Earth. She was hit by Bunshun cannon with a fabricated scandal; despite denying hard, her reputation tanked so hard. She escaped to her parents' house where a portal was opened, and her parents ordered her to go to the portal.",
       "associations": [
         {
           "role": "Loves",
@@ -1370,10 +1414,14 @@ export const dossiers: CharacterDossier[] = [
         "age": "Unknown",
         "birth": "Unverified",
         "family": "No verified record",
-        "origin": "Summoned one year, three months after hmgfan. Twelfth Earthian. Soldier, mechanized infantry engineer."
+        "origin": "Ukrainian soldier on base near Mariupol during the Russian invasion. Was on a smoke break with her commander, arguing about whether ERA on BMP makes it invincible (the commander being an idiot). Then Katarina was struck by a Geran-2. Summoned one year, three months after hmgfan. Twelfth Earthian."
       },
-      "history": "Katarina Petrenko, titled Smoke Signal, is the twelfth and final Earthian. She arrived one year and three months after hmgfan and is still very fresh. She is a soldier and mechanized infantry engineer. Her one loyal companion is Voroshilov, a light cruiser shipgirl from Azur Lane.",
+      "history": "Katarina Petrenko, titled Smoke Signal, is the twelfth and final Earthian. She was a Ukrainian soldier on base near Mariupol during the Russian invasion. While on a smoke break with her commander, arguing about whether ERA on BMP makes it invincible (the commander being an idiot), Katarina was struck by a Geran-2. She arrived one year and three months after hmgfan and is still very fresh. She is a soldier and mechanized infantry engineer. Her one loyal companion is Voroshilov, a light cruiser shipgirl from Azur Lane.",
       "record": [
+        {
+          "label": "PRE-SUMMONING",
+          "detail": "Ukrainian soldier on base near Mariupol during the Russian invasion. On a smoke break with her commander, arguing about whether ERA on BMP makes it invincible (the commander being an idiot). Struck by a Geran-2."
+        },
         {
           "label": "Military service",
           "detail": "Soldier. Mechanized infantry engineer."
@@ -1387,7 +1435,7 @@ export const dossiers: CharacterDossier[] = [
         "title": "NOT ON FILE",
         "body": "No major incident documented. The subject is still fresh to Fablea."
       },
-      "archive": "Katarina's life before the Summoning is entirely unverified. She is the most recent Earthian arrival.",
+      "archive": "Katarina was a Ukrainian soldier on base near Mariupol during the Russian invasion. While on a smoke break with her commander (arguing about whether ERA on BMP makes it invincible — the commander being an idiot), she was struck by a Geran-2.",
       "associations": [
         {
           "role": "Loyal companion",
